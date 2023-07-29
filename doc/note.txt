@@ -1,0 +1,7 @@
+1.用devcon安裝
+devcon install RamDiskDriver.inf RamDisk
+
+2. Enum Disk DevPath
+\\?\scsi#disk&ven_smoky&prod_smokingpc_disk#1&2afd7d61&0&000000#{53f56307-b6bf-11d0-94f2-00a0c91efb8b} => \\?\PhysicalDrive1
+
+3.用C#跑service？

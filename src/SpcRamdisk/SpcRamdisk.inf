@@ -1,0 +1,77 @@
+;
+; SpcRamdisk.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=SCSIAdapter
+ClassGUID={4D36E97B-E325-11CE-BFC1-08002BE10318} 
+Provider=%ManufacturerName%
+DriverVer=
+CatalogFile=SpcRamdisk.cat
+DriverPackageDisplayName=%DiskDesc%
+PnpLockDown=1
+
+;This template is supported for OS version 17763 (Windows 10 version 1809) and after.
+;For Windows OS prior to Windows 10 1809 set DefaultDestDir = 12
+[DestinationDirs]
+DefaultDestDir = 13
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+SpcRamDisk.sys=1,,
+
+[Manufacturer]
+%ManufacturerName%=Standard,NT$ARCH$
+
+[Standard.NT$ARCH$]
+%DeviceDesc%=DiskInstall, ROOT\SpcRamDisk
+[DiskInstall.NT]
+CopyFiles=DiskCopyfiles
+
+[DiskCopyfiles]
+SpcRamDisk.sys
+
+;-------------- Service installation
+[DiskInstall.NT.Services]
+AddService = "spcrd",%SPSVCINST_ASSOCSERVICE%,SpcRamDisk.Service
+
+; -------------- RamDiskDriver driver install sections
+[SpcRamDisk.Service]
+DisplayName    = "SmokingPC Ramdisk Service"
+ServiceType    = %SERVICE_KERNEL_DRIVER%
+StartType      = %SERVICE_DEMAND_START%
+ErrorControl   = %SERVICE_ERROR_NORMAL%
+ServiceBinary  = %13%\SpcRamDisk.sys
+LoadOrderGroup = "Scsi Miniport"
+AddReg         = SpcRamDisk_Reg
+
+[SpcRamDisk_Reg]
+HKR, Parameters\Device, DiskSize, %REG_DWORD%, 0x00000400 ; ramdisk size in MegaBytes
+HKR, Parameters\Device, BlockSize, %REG_DWORD%, 0x00001000 ; block size in bytes
+HKR, Parameters, BusType, %REG_DWORD%, 0x0000000D ; STORAGE_BUS_TYPE::BusTypeVirtual
+
+[Strings]
+ManufacturerName="SmokingPC"
+DiskName="SmokingPC Ramdisk Installation Source Disk"
+DiskDesc="SmokingPC Ramdisk Installation Source Disk"
+DeviceDesc="SmokingPC RamDisk Device" 
+
+SPSVCINST_ASSOCSERVICE= 0x00000002
+
+SERVICE_BOOT_START = 0x0 
+SERVICE_SYSTEM_START = 0x1 
+SERVICE_AUTO_START = 0x2 
+SERVICE_DEMAND_START = 0x3 
+SERVICE_DISABLED = 0x4 
+
+SERVICE_KERNEL_DRIVER = 0x1 
+SERVICE_ERROR_IGNORE = 0x0 
+SERVICE_ERROR_NORMAL = 0x1 
+SERVICE_ERROR_SEVERE = 0x2 
+SERVICE_ERROR_CRITICAL = 0x3 
+
+REG_EXPAND_SZ  = 0x00020000
+REG_DWORD      = 0x00010001
