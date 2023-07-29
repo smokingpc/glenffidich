@@ -1,0 +1,479 @@
+[DriverInstall]
+Smoky ==> [MiniportInitialize] IN =>
+Smoky ==> [MiniportInitialize] OUT <=
+Smoky ==> [HwFindAdapter] IN =>
+Smoky ==> [HwFindAdapter] OUT <=
+Smoky ==> [HwInitialize] IN =>
+Smoky ==> [HwInitialize] OUT <=
+Smoky ==> [HwPassiveInitializeRoutine] IN =>
+Smoky ==> [InitRamdiskController] IN =>
+Smoky ==> [_RAMDISK_CONFIG::_RAMDISK_CONFIG] IN =>
+Smoky ==> [_RAMDISK_CONFIG::_RAMDISK_CONFIG] OUT <=
+Smoky ==> [CRamdisk::CRamdisk] IN =>
+Smoky ==> [CRamdisk::CRamdisk] OUT <=
+Smoky ==> [CRamdisk::CRamdisk] IN =>
+Smoky ==> [CRamdisk::Setup] IN =>
+Smoky ==> [CRamdisk::Setup] OUT <=
+Smoky ==> [CRamdisk::CRamdisk] OUT <=
+Smoky ==> [InitRamdiskController] OUT <=
+Smoky ==> [HwPassiveInitializeRoutine] OUT <=
+Smoky ==> [HwAdapterControl] IN =>
+Smoky ==> [HandleQueryControlTypeList] IN =>
+Smoky ==> [HandleQueryControlTypeList] OUT <=
+Smoky ==> [HwAdapterControl] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_REPORT_LUNS)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_INQUIRY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_INQUIRY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_INQUIRY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_INQUIRY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_INQUIRY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_PNP)
+Smoky ==> [HandlePnpCmd] IN =>
+Smoky ==> [HandlePnpCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_READ_CAPACITY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_IO_CONTROL)
+Smoky ==> [HandleIoCtlCmd] IN =>
+Smoky ==> [HandleIoCtlCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_MODE_SENSE)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_INQUIRY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_INQUIRY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_INQUIRY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_MODE_SENSE)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_IO_CONTROL)
+Smoky ==> [HandleIoCtlCmd] IN =>
+Smoky ==> [HandleIoCtlCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_IO_CONTROL)
+Smoky ==> [HandleIoCtlCmd] IN =>
+Smoky ==> [HandleIoCtlCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_GET_LBA_STATUS/GET_PHYSICAL_ELEMENT_STATUS/REMOVE_ELEMENT_AND_TRUNCATE/SERVICE_ACTION_IN16)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_INQUIRY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_INQUIRY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_INQUIRY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_IO_CONTROL)
+Smoky ==> [HandleIoCtlCmd] IN =>
+Smoky ==> [HandleIoCtlCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_PNP)
+Smoky ==> [HandlePnpCmd] IN =>
+Smoky ==> [HandlePnpCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_READ)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_READ_CAPACITY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_READ)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_READ_CAPACITY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_READ)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_PNP)
+Smoky ==> [HandlePnpCmd] IN =>
+Smoky ==> [HandlePnpCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_READ_CAPACITY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_IO_CONTROL)
+Smoky ==> [HandleIoCtlCmd] IN =>
+Smoky ==> [HandleIoCtlCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_INQUIRY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_READ_CAPACITY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_READ)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_WMI)
+Smoky ==> [DefaultCmdHandler] IN =>
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_WMI)
+Smoky ==> [DefaultCmdHandler] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_WMI)
+Smoky ==> [DefaultCmdHandler] IN =>
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_WMI)
+Smoky ==> [DefaultCmdHandler] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+
+[Init MBR Disk (fail)]
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_READ_CAPACITY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_READ)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_WRITE)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_READ_CAPACITY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_READ)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_TEST_UNIT_READY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_MODE_SENSE)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_READ_CAPACITY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_MODE_SENSE)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_READ)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_WRITE)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_MODE_SENSE)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_TEST_UNIT_READY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_MODE_SENSE)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_READ_CAPACITY)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_MODE_SENSE)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_MODE_SENSE)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_MODE_SENSE)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_EXECUTE_SCSI)
+Smoky ==> [HandleScsiCmd] IN =>
+Smoky ==> Got SCSI Cmd(SCSIOP_MODE_SENSE)
+Smoky ==> [HandleScsiCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+
+
+
+[unload driver]
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_IO_CONTROL)
+Smoky ==> [HandleIoCtlCmd] IN =>
+Smoky ==> [HandleIoCtlCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwCompleteServiceIrp] IN =>
+Smoky ==> [HwCompleteServiceIrp] OUT <=
+Smoky ==> [HwStartIo] IN =>
+Smoky ==> [GetSrbExt] IN =>
+Smoky ==> [GetSrbExt] OUT <=
+Smoky ==> Got SRB cmd, code (SRB_FUNCTION_PNP)
+Smoky ==> [HandlePnpCmd] IN =>
+Smoky ==> [HandlePnpCmd] OUT <=
+Smoky ==> [HwStartIo] OUT <=
+Smoky ==> [HwAdapterControl] IN =>
+Smoky ==> [HandleScsiStopAdapter] IN =>
+Smoky ==> [HandleScsiStopAdapter] OUT <=
+Smoky ==> [HwAdapterControl] OUT <=
+Smoky ==> [HwFreeAdapterResources] IN =>
+Smoky ==> [CRamdisk::~CRamdisk] IN =>
+Smoky ==> [CRamdisk::Teardown] IN =>
+Smoky ==> [CRamdisk::Teardown] OUT <=
+Smoky ==> [CRamdisk::~CRamdisk] OUT <=
+Smoky ==> [HwFreeAdapterResources] OUT <=
