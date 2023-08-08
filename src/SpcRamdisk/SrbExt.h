@@ -36,6 +36,7 @@
 
 //SRB Extension for Ramdisk, this is "per STORPORT REQUEST" context
 typedef struct _SPC_SRBEXT {
+    SLIST_ENTRY List;
     PSPC_DEVEXT DevExt;
     PSTORAGE_REQUEST_BLOCK  Srb;
 
@@ -49,6 +50,7 @@ typedef struct _SPC_SRBEXT {
     PSRBEX_DATA_PNP PnpData;
     PVOID DataBuffer;
     ULONG DataBufLen;
+    bool IsWrite;
 
     void SetScsiStateBySrbStatus(UCHAR srb_status);
     void CompleteSrb(UCHAR srb_status);

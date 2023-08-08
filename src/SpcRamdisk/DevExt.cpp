@@ -1,5 +1,21 @@
 #include "precompile.h"
 
+STOR_THREAD_START_ROUTINE IoWorkerThreadRoutine;
+
+void IoWorkerThreadRoutine(PVOID start_ctx)
+{
+    PSPC_DEVEXT devext = (PSPC_DEVEXT) start_ctx;
+    ULONG counter = 0;
+
+    while(STATUS_WAIT_0 != KeWaitForSingleObject(&devext->EventStopThread, 
+                Executive, KernelMode, FALSE, &devext->ThreadInterval))
+    {
+        counter = devext->ProcessIoRequests();
+        KdPrintEx((DPFLTR_IHVDRIVER_ID, 1, "WorkerThread processed [%lu] Srb\n", counter));
+    }
+
+}
+
 void _SPC_DEVEXT::Setup()
 {
     RtlStringCchPrintfA((NTSTRSAFE_PSTR)this->SN, SN_STRBUF_SIZE, "%llu", DISK_SN);
@@ -9,6 +25,14 @@ void _SPC_DEVEXT::Setup()
     LoadDefault();
     LoadRegistry();
     Disk = (PUCHAR) new(NonPagedPoolNx, TAG_DISKMEM) UCHAR[(size_t)TotalDiskBytes];
+
+    ExInitializeSListHead(&RequestHead);
+    KeInitializeEvent(&EventStopThread, SynchronizationEvent, FALSE);
+    ThreadInterval.QuadPart = WORKER_INTERVAL;
+    STOR_THREAD_PRIORITY priority = STOR_THREAD_PRIORITY::StorThreadPriorityNormal;
+    RtlZeroMemory(WorkerThread, sizeof(WorkerThread));
+    StorPortCreateSystemThread(this, IoWorkerThreadRoutine, this, &priority, &WorkerThread[0]);
+    //StorPortCreateSystemThread(this, IoWorkerThreadRoutine, this, &priority, &WorkerThread[1]);
 }
 void _SPC_DEVEXT::Teardown()
 {
@@ -59,6 +83,51 @@ NTSTATUS _SPC_DEVEXT::Write(ULONG_PTR offset, ULONG length, PVOID buffer)
     RtlCopyMemory(start_va, buffer, length);
     return STATUS_SUCCESS;
 }
+
+void _SPC_DEVEXT::PushIoRequest(PVOID arg)
+{
+    //srbext->List is located at beginning of SPC_SRBEXT.
+    //so just force cast this pointer. (lazy way....)
+    PSPC_SRBEXT srbext = (PSPC_SRBEXT)arg;
+    ExInterlockedPushEntrySList(&RequestHead, &srbext->List, NULL);
+}
+PVOID _SPC_DEVEXT::PopIoRequest()
+{
+    return (PSPC_SRBEXT) ExInterlockedPopEntrySList(&RequestHead, NULL);
+}
+ULONG _SPC_DEVEXT::ProcessIoRequests()
+{
+    ULONG count = 0;
+    for (count = 0; count < WORKER_PROCESS_COUNT; count++)
+    {
+        ULONG blocks = 0;
+        ULONG64 start_block = 0;
+        NTSTATUS status = STATUS_SUCCESS;
+        UCHAR srb_status = SRB_STATUS_SUCCESS;
+        PSPC_SRBEXT srbext = (PSPC_SRBEXT)PopIoRequest();
+        if (NULL == srbext)
+            break;
+
+        ParseLbaBlockAndOffset(start_block, blocks, srbext->Cdb);
+        if(!srbext->IsWrite)
+        {
+            status = ReadLBA(start_block, blocks, srbext->DataBuffer);
+        }
+        else
+        {
+            status = WriteLBA(start_block, blocks, srbext->DataBuffer);
+        }
+
+        if(NT_SUCCESS(status))
+            srb_status = SRB_STATUS_SUCCESS;
+        else
+            srb_status = SRB_STATUS_ERROR;
+
+        srbext->CompleteSrb(srb_status);
+    }
+    return count;
+}
+
 void _SPC_DEVEXT::SetSize(size_t total_bytes, ULONG bytes_of_block)
 {
     //todo: check "is bytes_of_block == 512 or 4096?"

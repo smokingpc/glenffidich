@@ -98,26 +98,32 @@ void ParseLbaBlockAndOffset(OUT ULONG64& start_block, OUT ULONG& length, PCDB cd
         break;
     }
 }
+//UCHAR ReadWriteRamdisk(PSPC_SRBEXT srbext, BOOLEAN is_write)
+//{
+//    ULONG blocks = 0;
+//    ULONG64 start_block = 0;
+//    NTSTATUS status = STATUS_SUCCESS;
+//
+//    ParseLbaBlockAndOffset(start_block, blocks, srbext->Cdb);
+//    if (is_write)
+//        status = srbext->DevExt->WriteLBA(
+//                    start_block, blocks, srbext->DataBuffer);
+//    else
+//        status = srbext->DevExt->ReadLBA(
+//                    start_block, blocks, srbext->DataBuffer);
+//
+//    if (!NT_SUCCESS(status))
+//    {
+//        if(STATUS_PENDING == status)
+//            return SRB_STATUS_PENDING;
+//        else
+//            return SRB_STATUS_INTERNAL_ERROR;
+//    }
+//    return SRB_STATUS_SUCCESS;
+//}
 UCHAR ReadWriteRamdisk(PSPC_SRBEXT srbext, BOOLEAN is_write)
 {
-    ULONG blocks = 0;
-    ULONG64 start_block = 0;
-    NTSTATUS status = STATUS_SUCCESS;
-
-    ParseLbaBlockAndOffset(start_block, blocks, srbext->Cdb);
-    if (is_write)
-        status = srbext->DevExt->WriteLBA(
-                    start_block, blocks, srbext->DataBuffer);
-    else
-        status = srbext->DevExt->ReadLBA(
-                    start_block, blocks, srbext->DataBuffer);
-
-    if (!NT_SUCCESS(status))
-    {
-        if(STATUS_PENDING == status)
-            return SRB_STATUS_PENDING;
-        else
-            return SRB_STATUS_INTERNAL_ERROR;
-    }
-    return SRB_STATUS_SUCCESS;
+    srbext->IsWrite = is_write;
+    srbext->DevExt->PushIoRequest(srbext);
+    return SRB_STATUS_PENDING;
 }

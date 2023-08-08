@@ -55,6 +55,11 @@ typedef struct _SPC_DEVEXT {
     ULONG_PTR TotalBlocks;
     INT64 MaxLBA;
 
+    SLIST_HEADER RequestHead;
+    PVOID WorkerThread[2];
+    KEVENT EventStopThread;
+    LARGE_INTEGER ThreadInterval;
+
     void Setup();
     void Teardown();
 
@@ -64,6 +69,10 @@ typedef struct _SPC_DEVEXT {
     NTSTATUS WriteLBA(ULONG_PTR start_block, ULONG blocks, PVOID buffer);
     NTSTATUS Read(ULONG_PTR offset, ULONG length, PVOID buffer);
     NTSTATUS Write(ULONG_PTR offset, ULONG length, PVOID buffer);
+
+    void PushIoRequest(PVOID srbext);
+    PVOID PopIoRequest();
+    ULONG ProcessIoRequests();
 
     void SetSize(size_t total_size, ULONG size_of_block);
     void LoadRegistry();

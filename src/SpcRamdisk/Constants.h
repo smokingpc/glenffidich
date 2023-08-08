@@ -50,6 +50,8 @@
 #define DEFAULT_BLOCK_SIZE    4096
 #define DEFAULT_BLOCK_SIZE2   512
 #define DEFAULT_DISK_BYTES    128 * MegaBytes
+#define WORKER_PROCESS_COUNT  64  //how many requests worker thread handled in each loop?
+#define WORKER_INTERVAL       (-10*1000)    //how long worker thread wait in each loop?
 #define SN_STRBUF_SIZE      32
 #define VENDOR_ID           "SpcRam  "  //MAX 8 chars
 #define PRODUCT_ID          "Spc RamDisk     "  //MAX 16 chars
