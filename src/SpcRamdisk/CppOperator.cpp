@@ -44,3 +44,14 @@ void operator delete(void* ptr, ULONG tag)
 {
     ExFreePoolWithTag(ptr, tag);
 }
+//usage: delete ptr[];
+void __cdecl operator delete[](void* ptr)
+{
+    ExFreePool(ptr);
+}
+void __cdecl operator delete[](void* ptr, size_t size)
+{
+    UNREFERENCED_PARAMETER(size);
+    ExFreePool(ptr);
+}
+

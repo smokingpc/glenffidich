@@ -20,7 +20,6 @@ static void ReplyQueryCapability(PSPC_SRBEXT srbext, PSTOR_DEVICE_CAPABILITIES c
     cap->SilentInstall = 1;
     cap->SurpriseRemovalOK = 1;
 }
-
 static UCHAR HandleQueryCapability(PSPC_SRBEXT srbext)
 {
     //query LUN capability for OS(disk management system), not for SCSI subsystem.
@@ -42,7 +41,6 @@ static UCHAR HandleQueryCapability(PSPC_SRBEXT srbext)
 
     return SRB_STATUS_SUCCESS;
 }
-
 static UCHAR HandleDeviceRemove(PSPC_SRBEXT srbext)
 {
     UNREFERENCED_PARAMETER(srbext);
@@ -50,7 +48,7 @@ static UCHAR HandleDeviceRemove(PSPC_SRBEXT srbext)
     return SRB_STATUS_SUCCESS;
 }
 
-UCHAR HandlePnpCmd(PSPC_SRBEXT srbext)
+UCHAR StartIo_HandlePnpCmd(PSPC_SRBEXT srbext)
 {
     CDebugCallInOut inout(__FUNCTION__);
     UCHAR srb_status = SRB_STATUS_ERROR;
@@ -95,7 +93,7 @@ UCHAR HandlePnpCmd(PSPC_SRBEXT srbext)
 
     return srb_status;
 }
-UCHAR HandleIoCtlCmd(PSPC_SRBEXT srbext)
+UCHAR StartIo_HandleIoCtlCmd(PSPC_SRBEXT srbext)
 {
     CDebugCallInOut inout(__FUNCTION__);
     UNREFERENCED_PARAMETER(srbext);
@@ -103,7 +101,7 @@ UCHAR HandleIoCtlCmd(PSPC_SRBEXT srbext)
 
     return srb_status;
 }
-UCHAR HandleScsiCmd(PSPC_SRBEXT srbext)
+UCHAR StartIo_HandleScsiCmd(PSPC_SRBEXT srbext)
 {
     CDebugCallInOut inout(__FUNCTION__);
     UCHAR srb_status = SRB_STATUS_ERROR;
