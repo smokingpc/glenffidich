@@ -52,7 +52,7 @@ typedef struct _SPC_SRBEXT {
     ULONG DataBufLen;
     bool IsWrite;
 
-    void SetScsiStateBySrbStatus(UCHAR srb_status);
+    void SetScsiStateBySrbStatus(UCHAR &srb_status);
     void CompleteSrb(UCHAR srb_status);
     inline void SetDataTxLen(ULONG len)
     {

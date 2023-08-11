@@ -20,18 +20,12 @@ PSPC_SRBEXT GetSrbExt(PSTORAGE_REQUEST_BLOCK srb, PVOID devext)
     return srbext;
 }
 
-void _SPC_SRBEXT::SetScsiStateBySrbStatus(UCHAR srb_status)
+void _SPC_SRBEXT::SetScsiStateBySrbStatus(UCHAR &srb_status)
 {
     if (NULL == Srb)
         return;
     PSENSE_DATA sdata = (PSENSE_DATA)SrbGetSenseInfoBuffer(Srb);
     UCHAR sdata_size = SrbGetSenseInfoBufferLength(Srb);
-
-    if (NULL == sdata || sdata_size == 0)
-    {
-        SrbSetScsiStatus(Srb, SCSISTAT_CONDITION_MET);
-        return;
-    }
 
     //do nothing for SRB_STATUS_PENDING.
     //Don't set scsistate for PENDING.
@@ -46,14 +40,17 @@ void _SPC_SRBEXT::SetScsiStateBySrbStatus(UCHAR srb_status)
         SrbSetScsiStatus(Srb, SCSISTAT_BUSY);
         break;
     default:
-        if (NULL == sdata || sdata_size == 0)
+        srb_status = srb_status | SRB_STATUS_AUTOSENSE_VALID;
+        if (NULL == sdata || 0 == sdata_size)
         {
             SrbSetScsiStatus(Srb, SCSISTAT_CONDITION_MET);
         }
         else
         {
+            RtlZeroMemory(sdata, sdata_size);
+            sdata->ErrorCode = SCSI_SENSE_ERRORCODE_FIXED_CURRENT;
             sdata->SenseKey = SCSI_SENSE_ILLEGAL_REQUEST;
-            sdata->AdditionalSenseLength = 0x15;
+            sdata->AdditionalSenseLength = sdata_size - FIELD_OFFSET(SENSE_DATA, AdditionalSenseLength);
             sdata->AdditionalSenseCode = SCSI_ADSENSE_ILLEGAL_COMMAND;
             sdata->AdditionalSenseCodeQualifier = 0;
             SrbSetScsiStatus(Srb, SCSISTAT_CHECK_CONDITION);
