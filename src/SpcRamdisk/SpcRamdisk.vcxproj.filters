@@ -75,6 +75,9 @@
     <ClCompile Include="ScsiHandler_Utils.cpp">
       <Filter>Scsi_Handler</Filter>
     </ClCompile>
+    <ClCompile Include="UnitControl_Handlers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="precompile.h">
@@ -120,6 +123,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AdapterControl_Handlers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AutoPointer.hpp">
+      <Filter>CppSupport</Filter>
+    </ClInclude>
+    <ClInclude Include="UnitControl_Handlers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

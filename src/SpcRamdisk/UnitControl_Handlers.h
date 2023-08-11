@@ -34,29 +34,17 @@
 // Enjoy it.
 // ================================================================
 
-
-#define DBG_FILTER      0x00000080
-#define KiloBytes       1024
-#define MegaBytes       1048576     //1024*1024
-#define GigaBytes       1073741824  //1024*1024*1024
-#define MAX_TX_PAGES    (256)
-#define MAX_TX_SIZE     (MAX_TX_PAGES * PAGE_SIZE)
-#define MAX_IO_PER_LUN  64
-#define SUPPORTED_LU    1
-#define MAX_TOTAL_IO    (MAX_IO_PER_LUN*SUPPORTED_LU)
-#define PAUSE_ADAPTER_TIMEOUT   5//in seconds
-#define STALL_TIMEOUT   500     //in micro-second
-#define MIN_CONCURRENT_IO   8
-
-#define DEFAULT_BLOCK_SIZE    4096
-#define DEFAULT_BLOCK_SIZE2   512
-#define DEFAULT_DISK_BYTES    128 * MegaBytes
-#define WORKER_PROCESS_COUNT  128  //how many requests worker thread handled in each loop?
-#define WORKER_INTERVAL       (-10*1000)    //how long worker thread wait in each loop?
-#define SN_STRBUF_SIZE      32
-#define VENDOR_ID           "SPC"  //MAX 8 chars
-#define PRODUCT_ID          "SpcRamDisk      "  //MAX 16 chars
-#define REV_ID              "0100"      //MAX 4
-#define NQN_BUF_SIZE        224
-#define NQN_FORMAT          "nqn.2014-08.smokingpc:spc.ramdisk_%s"
-#define DISK_SN             (LONGLONG)1645017030  //epoc timestamp (2022/02/16 21:10:30)
+SCSI_UNIT_CONTROL_STATUS HandleQueryUnitControlTypes(PSPC_DEVEXT devext, SCSI_SUPPORTED_CONTROL_TYPE_LIST* param);
+SCSI_UNIT_CONTROL_STATUS HandleScsiUnitUsage(PSPC_DEVEXT devext, STOR_UC_DEVICE_USAGE* param);
+SCSI_UNIT_CONTROL_STATUS HandleScsiUnitStart(PSPC_DEVEXT devext, STOR_ADDR_BTL8 *param);
+SCSI_UNIT_CONTROL_STATUS HandleScsiUnitPower(PSPC_DEVEXT devext, STOR_UNIT_CONTROL_POWER* param);
+SCSI_UNIT_CONTROL_STATUS HandleScsiUnitPoFxPowerInfo(PSPC_DEVEXT devext, STOR_POFX_UNIT_POWER_INFO* param);
+SCSI_UNIT_CONTROL_STATUS HandleScsiUnitPoFxPowerRequired(PSPC_DEVEXT devext, STOR_POFX_POWER_REQUIRED_CONTEXT* param);
+SCSI_UNIT_CONTROL_STATUS HandleScsiUnitPoFxPowerActive(PSPC_DEVEXT devext, STOR_POFX_ACTIVE_CONTEXT* param);
+SCSI_UNIT_CONTROL_STATUS HandleScsiUnitPoFxPowerSetFState(PSPC_DEVEXT devext, STOR_POFX_FSTATE_CONTEXT* param);
+SCSI_UNIT_CONTROL_STATUS HandleScsiUnitPoFxPowerControl(PSPC_DEVEXT devext, STOR_POFX_POWER_CONTROL* param);
+SCSI_UNIT_CONTROL_STATUS HandleScsiUnitRemove(PSPC_DEVEXT devext, STOR_ADDR_BTL8* param);
+SCSI_UNIT_CONTROL_STATUS HandleScsiUnitSurpriseRemoval(PSPC_DEVEXT devext, STOR_ADDR_BTL8* param);
+SCSI_UNIT_CONTROL_STATUS HandleScsiUnitRichDescription(PSPC_DEVEXT devext, STOR_RICH_DEVICE_DESCRIPTION* param);
+SCSI_UNIT_CONTROL_STATUS HandleScsiUnitQueryBusType(PSPC_DEVEXT devext, STOR_UNIT_CONTROL_QUERY_BUS_TYPE* param);
+SCSI_UNIT_CONTROL_STATUS HandleScsiUnitQueryFruId(PSPC_DEVEXT devext, STOR_FRU_ID_DESCRIPTION* param);

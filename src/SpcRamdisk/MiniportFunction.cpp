@@ -73,7 +73,7 @@ BOOLEAN HwInitialize(PVOID DeviceExtension)
     if (0 != (query.Flags & STOR_PERF_CONCURRENT_CHANNELS))
     {
         set.Flags |= STOR_PERF_CONCURRENT_CHANNELS;
-        set.ConcurrentChannels = 2 * KeQueryActiveProcessorCountEx(ALL_PROCESSOR_GROUPS);
+        set.ConcurrentChannels = max(MIN_CONCURRENT_IO, KeQueryActiveProcessorCountEx(ALL_PROCESSOR_GROUPS));
     }
     //I don't use SGL... but Win10 don't support this flag
     if (0 != (query.Flags & STOR_PERF_NO_SGL))
@@ -174,7 +174,6 @@ SCSI_ADAPTER_CONTROL_STATUS HwAdapterControl(
 )
 {
     CDebugCallInOut inout(__FUNCTION__);
-    UNREFERENCED_PARAMETER(ControlType);
     UNREFERENCED_PARAMETER(Parameters);
     PSPC_DEVEXT devext = (PSPC_DEVEXT)DeviceExtension;
     SCSI_ADAPTER_CONTROL_STATUS status = ScsiAdapterControlUnsuccessful;
@@ -183,7 +182,7 @@ SCSI_ADAPTER_CONTROL_STATUS HwAdapterControl(
     {
         case ScsiQuerySupportedControlTypes:
             //PASSIVE_LEVEL
-            status = HandleQueryControlTypeList((PSCSI_SUPPORTED_CONTROL_TYPE_LIST)Parameters);
+            status = HandleQueryAdapterControlTypes((PSCSI_SUPPORTED_CONTROL_TYPE_LIST)Parameters);
             break;
         case ScsiStopAdapter:
             //DIRQL
@@ -254,15 +253,72 @@ SCSI_UNIT_CONTROL_STATUS HwUnitControl(
     _In_ PVOID Parameters
 )
 {
-    UNREFERENCED_PARAMETER(DeviceExtension);
-    UNREFERENCED_PARAMETER(ControlType);
-    UNREFERENCED_PARAMETER(Parameters);
+    CDebugCallInOut inout(__FUNCTION__);
+    PSPC_DEVEXT devext = (PSPC_DEVEXT)DeviceExtension;
+    SCSI_UNIT_CONTROL_STATUS status = ScsiUnitControlSuccess;
 
-    //UnitControl should handle events of LU:
-    //1.Power States
-    //2.Device Start
-    //3.Device Remove and Surprise Remove
-    return ScsiUnitControlSuccess;
+    switch (ControlType)
+    {
+    case ScsiQuerySupportedUnitControlTypes:
+    //PASSIVE_LEVEL
+        status = HandleQueryUnitControlTypes(devext, (SCSI_SUPPORTED_CONTROL_TYPE_LIST*) Parameters);
+        break;
+    case ScsiUnitUsage:
+        //PASSIVE_LEVEL
+        status = HandleScsiUnitUsage(devext, (STOR_UC_DEVICE_USAGE*)Parameters);
+        break;
+    case ScsiUnitStart:
+        //PASSIVE_LEVEL
+        status = HandleScsiUnitStart(devext, (STOR_ADDR_BTL8*) Parameters);
+        break;
+    case ScsiUnitPower:
+        //DISPATCH_LEVEL
+        status = HandleScsiUnitPower(devext, (STOR_UNIT_CONTROL_POWER*) Parameters);
+        break;
+    case ScsiUnitPoFxPowerInfo:
+        //PASSIVE_LEVEL
+        status = HandleScsiUnitPoFxPowerInfo(devext, (STOR_POFX_UNIT_POWER_INFO*) Parameters);
+        break;
+    case ScsiUnitPoFxPowerRequired:
+        //DISPATCH_LEVEL
+        status = HandleScsiUnitPoFxPowerRequired(devext, (STOR_POFX_POWER_REQUIRED_CONTEXT*)Parameters);
+        break;
+    case ScsiUnitPoFxPowerActive:
+        //DISPATCH_LEVEL
+        status = HandleScsiUnitPoFxPowerActive(devext, (STOR_POFX_ACTIVE_CONTEXT*)Parameters);
+        break;
+    case ScsiUnitPoFxPowerSetFState:
+        //DISPATCH_LEVEL
+        status = HandleScsiUnitPoFxPowerSetFState(devext, (STOR_POFX_FSTATE_CONTEXT*)Parameters);
+        break;
+    case ScsiUnitPoFxPowerControl:
+        //DISPATCH_LEVEL
+        status = HandleScsiUnitPoFxPowerControl(devext, (STOR_POFX_POWER_CONTROL*)Parameters);
+        break;
+    case ScsiUnitRemove:
+        //PASSIVE_LEVEL
+        status = HandleScsiUnitRemove(devext, (STOR_ADDR_BTL8*)Parameters);
+        break;
+    case ScsiUnitSurpriseRemoval:
+        //PASSIVE_LEVEL
+        status = HandleScsiUnitSurpriseRemoval(devext, (STOR_ADDR_BTL8*)Parameters);
+        break;
+    case ScsiUnitRichDescription:
+        //PASSIVE_LEVEL
+        status = HandleScsiUnitRichDescription(devext, (STOR_RICH_DEVICE_DESCRIPTION*)Parameters);
+        break;
+    case ScsiUnitQueryBusType:
+        //PASSIVE_LEVEL
+        status = HandleScsiUnitQueryBusType(devext, (STOR_UNIT_CONTROL_QUERY_BUS_TYPE*)Parameters);
+        break;
+    case ScsiUnitQueryFruId:
+        //PASSIVE_LEVEL
+        status = HandleScsiUnitQueryFruId(devext, (STOR_FRU_ID_DESCRIPTION*)Parameters);
+        break;
+    default:
+        status = ScsiUnitControlUnsuccessful;
+    }
+    return status;
 }
 
 _Use_decl_annotations_

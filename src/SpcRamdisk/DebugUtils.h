@@ -39,18 +39,16 @@
 #define DEBUG_PREFIX    "SPC ==>"
 #define DBG_FILTER      0x00000080
 
+void DebugUnitControlType(SCSI_UNIT_CONTROL_TYPE type);
 void DebugSrbFunctionCode(ULONG code);
 void DebugScsiOpCode(UCHAR opcode);
-#define DebugLog(fmt,args) \
-{ \
-    DbgPrintEx(DPFLTR_IHVDRIVER_ID, DBG_FILTER, fmt, args); \
-}
 
 class CDebugCallInOut
 {
 private:
     static const int BufSize = 64;      //max function name length == 64 chars
-    char* Name = NULL;
+    char* NameBuf = NULL;
+    CAutoPtr<char> NamePtr;
 public:
     CDebugCallInOut(char* name);
     ~CDebugCallInOut();

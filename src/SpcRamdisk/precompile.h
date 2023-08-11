@@ -46,6 +46,7 @@ EXTERN_C_END
 #include <ntstrsafe.h>
 #include "PoolTag.h"
 #include "Constants.h"
+#include "AutoPointer.hpp"
 #include "DebugUtils.h"
 #include "CppSupport.h"
 
@@ -53,6 +54,7 @@ EXTERN_C_END
 #include "SrbExt.h"
 #include "MiniportFunction.h"
 #include "AdapterControl_Handlers.h"
+#include "UnitControl_Handlers.h"
 #include "StartIo_Handler.h"
 
 #include "ScsiHandler_CDB6.h"

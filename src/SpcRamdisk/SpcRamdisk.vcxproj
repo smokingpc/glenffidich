@@ -213,9 +213,11 @@
     <ClCompile Include="ScsiHandler_Utils.cpp" />
     <ClCompile Include="SrbExt.cpp" />
     <ClCompile Include="StartIo_Handlers.cpp" />
+    <ClCompile Include="UnitControl_Handlers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AdapterControl_Handlers.h" />
+    <ClInclude Include="AutoPointer.hpp" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="CppSupport.h" />
     <ClInclude Include="DebugUtils.h" />
@@ -230,6 +232,7 @@
     <ClInclude Include="ScsiHandler_Utils.h" />
     <ClInclude Include="SrbExt.h" />
     <ClInclude Include="StartIo_Handler.h" />
+    <ClInclude Include="UnitControl_Handlers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

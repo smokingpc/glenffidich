@@ -41,9 +41,9 @@ AddService = "spcramdisk",%SPSVCINST_ASSOCSERVICE%,SpcRamDisk.Service
 ; -------------- RamDiskDriver driver install sections
 [SpcRamDisk.Service]
 DisplayName    = "SmokingPC Ramdisk Service"
-ServiceType    = %SERVICE_KERNEL_DRIVER%    ; SERVICE_KERNEL_DRIVER
-StartType      = %SERVICE_BOOT_START%       ; SERVICE_BOOT_START
-ErrorControl   = %SERVICE_ERROR_NORMAL%     ; SERVICE_ERROR_NORMAL
+ServiceType    = %SERVICE_KERNEL_DRIVER%
+StartType      = %SERVICE_DEMAND_START%
+ErrorControl   = %SERVICE_ERROR_NORMAL%
 ServiceBinary  = %13%\SpcRamDisk.sys
 LoadOrderGroup = "Scsi Miniport"
 AddReg         = SpcRamDisk_Reg
@@ -51,7 +51,7 @@ AddReg         = SpcRamDisk_Reg
 [SpcRamDisk_Reg]
 HKR, Parameters\Device, DiskSize, %REG_DWORD%, 0x00000400 ; ramdisk size in MegaBytes
 HKR, Parameters\Device, BlockSize, %REG_DWORD%, 0x00001000 ; block size in bytes
-HKR, Parameters, BusType, %REG_DWORD%, 0x0000000D ; 
+HKR, Parameters, BusType, %REG_DWORD%, 0x0000000D ; STORAGE_BUS_TYPE::BusTypeVirtual
 
 [Strings]
 ManufacturerName="SmokingPC"

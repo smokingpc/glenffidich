@@ -2,6 +2,13 @@
 
 #define MSG_BUFFER_SIZE     128
 
+#if 0
+#define DebugLog(fmt,args) \
+{ \
+    DbgPrintEx(DPFLTR_IHVDRIVER_ID, DBG_FILTER, fmt, args); \
+}
+#endif
+
 __inline void DebugCallIn(char *func_name)
 {
     DbgPrintEx(DPFLTR_IHVDRIVER_ID, DBG_FILTER, "%s [%s] IN =>\n", DEBUG_PREFIX, func_name);
@@ -14,34 +21,93 @@ __inline void DebugCallOut(char *func_name)
 
 CDebugCallInOut::CDebugCallInOut(char* name)
 {
-    this->Name = (char*) new(NonPagedPoolNx, TAG_GENERIC) char[this->BufSize];
-    if (NULL != this->Name)
+    this->NameBuf = (char*) new(NonPagedPoolNx, TAG_GENERIC) char[this->BufSize];
+    this->NamePtr.Reset(this->NameBuf);
+    if (NULL != this->NameBuf)
     {
-        memcpy(this->Name, name, BufSize);
-        DebugCallIn(this->Name);
+        memcpy(this->NameBuf, name, BufSize);
+        DebugCallIn(this->NameBuf);
     }
 }
 CDebugCallInOut::~CDebugCallInOut()
 {
-    if (NULL != this->Name)
+    if (NULL != this->NameBuf)
     {
-        DebugCallOut(this->Name);
-        delete[] Name;
+        DebugCallOut(this->NameBuf);
     }
+}
+
+void DebugUnitControlType(SCSI_UNIT_CONTROL_TYPE type)
+{
+//    char* msg = new(NonPagedPoolNx, TAG_GENERIC) char[MSG_BUFFER_SIZE];
+    CAutoPtr<char> msg(new(NonPagedPoolNx, TAG_GENERIC) char[MSG_BUFFER_SIZE]);
+    switch (type)
+    {
+    case ScsiQuerySupportedUnitControlTypes:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "ScsiQuerySupportedUnitControlTypes");
+        break;
+    case ScsiUnitUsage:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "ScsiUnitUsage");
+        break;
+    case ScsiUnitStart:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "ScsiUnitStart");
+        break;
+    case ScsiUnitPower:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "ScsiUnitPower");
+        break;
+    case ScsiUnitPoFxPowerInfo:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "ScsiUnitPoFxPowerInfo");
+        break;
+    case ScsiUnitPoFxPowerRequired:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "ScsiUnitPoFxPowerRequired");
+        break;
+    case ScsiUnitPoFxPowerActive:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "ScsiUnitPoFxPowerActive");
+        break;
+    case ScsiUnitPoFxPowerSetFState:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "ScsiUnitPoFxPowerSetFState");
+        break;
+    case ScsiUnitPoFxPowerControl:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "ScsiUnitPoFxPowerControl");
+        break;
+    case ScsiUnitRemove:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "ScsiUnitRemove");
+        break;
+    case ScsiUnitSurpriseRemoval:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "ScsiUnitSurpriseRemoval");
+        break;
+    case ScsiUnitRichDescription:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "ScsiUnitRichDescription");
+        break;
+    case ScsiUnitQueryBusType:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "ScsiUnitQueryBusType");
+        break;
+    case ScsiUnitQueryFruId:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "ScsiUnitQueryFruId");
+        break;
+    default:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "UNKNOWN");
+        break;
+    }
+
+    DbgPrintEx(DPFLTR_IHVDRIVER_ID, DBG_FILTER, "%s Got UNIT_CONTROL Cmd(%s)\n", DEBUG_PREFIX, msg.Get());
+//    delete msg;
 }
 
 void DebugScsiOpCode(UCHAR opcode)
 {
-    char *msg = new(NonPagedPoolNx, TAG_GENERIC) char[MSG_BUFFER_SIZE];
+//    char *msg = new(NonPagedPoolNx, TAG_GENERIC) char[MSG_BUFFER_SIZE];
+    CAutoPtr<char> msg(new(NonPagedPoolNx, TAG_GENERIC) char[MSG_BUFFER_SIZE]);
+
     switch (opcode)
     {
-        // 6-byte commands:
+        //  6-byte commands:
     case SCSIOP_TEST_UNIT_READY:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_TEST_UNIT_READY");
         break;
     case SCSIOP_REZERO_UNIT:
-        //case SCSIOP_REWIND:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_REZERO_UNIT/SCSIOP_REWIND");
+        // case SCSIOP_REWIND:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_REZERO_UNIT / SCSIOP_REWIND");
         break;
     case SCSIOP_REQUEST_BLOCK_ADDR:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_REQUEST_BLOCK_ADDR");
@@ -56,23 +122,23 @@ void DebugScsiOpCode(UCHAR opcode)
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ_BLOCK_LIMITS");
         break;
     case SCSIOP_REASSIGN_BLOCKS:
-        //case SCSIOP_INIT_ELEMENT_STATUS:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_REASSIGN_BLOCKS/SCSIOP_INIT_ELEMENT_STATUS");
+        // case SCSIOP_INIT_ELEMENT_STATUS:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_REASSIGN_BLOCKS / SCSIOP_INIT_ELEMENT_STATUS");
         break;
     case SCSIOP_READ6:
-        //case SCSIOP_RECEIVE:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ6/SCSIOP_RECEIVE");
+        // case SCSIOP_RECEIVE:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ6 / SCSIOP_RECEIVE");
         break;
     case SCSIOP_WRITE6:
-        //case SCSIOP_PRINT:
-        //case SCSIOP_SEND:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_WRITE6/SCSIOP_PRINT/SCSIOP_SEND");
+        // case SCSIOP_PRINT:
+        // case SCSIOP_SEND:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_WRITE6 / SCSIOP_PRINT / SCSIOP_SEND");
         break;
     case SCSIOP_SEEK6:
-        //case SCSIOP_TRACK_SELECT:
-        //case SCSIOP_SLEW_PRINT:
-        //case SCSIOP_SET_CAPACITY:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SEEK6/SCSIOP_TRACK_SELECT/SCSIOP_SLEW_PRINT/SCSIOP_SET_CAPACITY");
+        // case SCSIOP_TRACK_SELECT:
+        // case SCSIOP_SLEW_PRINT:
+        // case SCSIOP_SET_CAPACITY:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SEEK6 / SCSIOP_TRACK_SELECT / SCSIOP_SLEW_PRINT / SCSIOP_SET_CAPACITY");
         break;
     case SCSIOP_SEEK_BLOCK:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SEEK_BLOCK");
@@ -84,8 +150,8 @@ void DebugScsiOpCode(UCHAR opcode)
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ_REVERSE");
         break;
     case SCSIOP_WRITE_FILEMARKS:
-        //case SCSIOP_FLUSH_BUFFER:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_WRITE_FILEMARKS/SCSIOP_FLUSH_BUFFER");
+        // case SCSIOP_FLUSH_BUFFER:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_WRITE_FILEMARKS / SCSIOP_FLUSH_BUFFER");
         break;
     case SCSIOP_SPACE:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SPACE");
@@ -118,9 +184,9 @@ void DebugScsiOpCode(UCHAR opcode)
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_MODE_SENSE");
         break;
     case SCSIOP_START_STOP_UNIT:
-        //case SCSIOP_STOP_PRINT:
-        //case SCSIOP_LOAD_UNLOAD:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_START_STOP_UNIT/SCSIOP_STOP_PRINT/SCSIOP_LOAD_UNLOAD");
+        // case SCSIOP_STOP_PRINT:
+        // case SCSIOP_LOAD_UNLOAD:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_START_STOP_UNIT / SCSIOP_STOP_PRINT / SCSIOP_LOAD_UNLOAD");
         break;
     case SCSIOP_RECEIVE_DIAGNOSTIC:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_RECEIVE_DIAGNOSTIC");
@@ -132,7 +198,7 @@ void DebugScsiOpCode(UCHAR opcode)
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_MEDIUM_REMOVAL");
         break;
 
-        // 10-byte commands                 
+        //  10-byte commands                 
     case SCSIOP_READ_FORMATTED_CAPACITY:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ_FORMATTED_CAPACITY");
         break;
@@ -146,9 +212,9 @@ void DebugScsiOpCode(UCHAR opcode)
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_WRITE");
         break;
     case SCSIOP_SEEK:
-        //case SCSIOP_LOCATE:
-        //case SCSIOP_POSITION_TO_ELEMENT:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SEEK/SCSIOP_LOCATE/SCSIOP_POSITION_TO_ELEMENT");
+        // case SCSIOP_LOCATE:
+        // case SCSIOP_POSITION_TO_ELEMENT:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SEEK / SCSIOP_LOCATE / SCSIOP_POSITION_TO_ELEMENT");
         break;
     case SCSIOP_WRITE_VERIFY:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_WRITE_VERIFY");
@@ -196,15 +262,15 @@ void DebugScsiOpCode(UCHAR opcode)
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_WRITE_SAME");
         break;
     case SCSIOP_READ_SUB_CHANNEL:
-        //case SCSIOP_UNMAP:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ_SUB_CHANNEL/SCSIOP_UNMAP");
+        // case SCSIOP_UNMAP:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ_SUB_CHANNEL / SCSIOP_UNMAP");
         break;
     case SCSIOP_READ_TOC:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ_TOC");
         break;
     case SCSIOP_READ_HEADER:
-        //case SCSIOP_REPORT_DENSITY_SUPPORT:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ_HEADER/SCSIOP_REPORT_DENSITY_SUPPORT");
+        // case SCSIOP_REPORT_DENSITY_SUPPORT:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ_HEADER / SCSIOP_REPORT_DENSITY_SUPPORT");
         break;
     case SCSIOP_PLAY_AUDIO:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_PLAY_AUDIO");
@@ -216,8 +282,8 @@ void DebugScsiOpCode(UCHAR opcode)
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_PLAY_AUDIO_MSF");
         break;
     case SCSIOP_PLAY_TRACK_INDEX:
-        //case SCSIOP_SANITIZE:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_PLAY_TRACK_INDEX/SCSIOP_SANITIZE");
+        // case SCSIOP_SANITIZE:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_PLAY_TRACK_INDEX / SCSIOP_SANITIZE");
         break;
     case SCSIOP_PLAY_TRACK_RELATIVE:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_PLAY_TRACK_RELATIVE");
@@ -241,16 +307,16 @@ void DebugScsiOpCode(UCHAR opcode)
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_XDWRITE");
         break;
     case SCSIOP_XPWRITE:
-        //case SCSIOP_READ_DISK_INFORMATION:
-        //case SCSIOP_READ_DISC_INFORMATION:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_XPWRITE/SCSIOP_READ_DISK_INFORMATION/SCSIOP_READ_DISC_INFORMATION");
+        // case SCSIOP_READ_DISK_INFORMATION:
+        // case SCSIOP_READ_DISC_INFORMATION:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_XPWRITE / SCSIOP_READ_DISK_INFORMATION / SCSIOP_READ_DISC_INFORMATION");
         break;
     case SCSIOP_READ_TRACK_INFORMATION:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ_TRACK_INFORMATION");
         break;
     case SCSIOP_XDWRITE_READ:
-        //case SCSIOP_RESERVE_TRACK_RZONE:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_XDWRITE_READ/SCSIOP_RESERVE_TRACK_RZONE");
+        // case SCSIOP_RESERVE_TRACK_RZONE:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_XDWRITE_READ / SCSIOP_RESERVE_TRACK_RZONE");
         break;
     case SCSIOP_SEND_OPC_INFORMATION:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SEND_OPC_INFORMATION");
@@ -259,12 +325,12 @@ void DebugScsiOpCode(UCHAR opcode)
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_MODE_SELECT10");
         break;
     case SCSIOP_RESERVE_UNIT10:
-        //case SCSIOP_RESERVE_ELEMENT:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_RESERVE_UNIT10/SCSIOP_RESERVE_ELEMENT");
+        // case SCSIOP_RESERVE_ELEMENT:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_RESERVE_UNIT10 / SCSIOP_RESERVE_ELEMENT");
         break;
     case SCSIOP_RELEASE_UNIT10:
-        //case SCSIOP_RELEASE_ELEMENT:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_RELEASE_UNIT10/SCSIOP_RELEASE_ELEMENT");
+        // case SCSIOP_RELEASE_ELEMENT:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_RELEASE_UNIT10 / SCSIOP_RELEASE_ELEMENT");
         break;
     case SCSIOP_REPAIR_TRACK:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_REPAIR_TRACK");
@@ -293,35 +359,35 @@ void DebugScsiOpCode(UCHAR opcode)
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_REPORT_LUNS");
         break;
     case SCSIOP_BLANK:
-        //case SCSIOP_ATA_PASSTHROUGH12:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_BLANK/SCSIOP_ATA_PASSTHROUGH12");
+        // case SCSIOP_ATA_PASSTHROUGH12:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_BLANK / SCSIOP_ATA_PASSTHROUGH12");
         break;
     case SCSIOP_SEND_EVENT:
-        //case SCSIOP_SECURITY_PROTOCOL_IN:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SEND_EVENT/SCSIOP_SECURITY_PROTOCOL_IN");
+        // case SCSIOP_SECURITY_PROTOCOL_IN:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SEND_EVENT / SCSIOP_SECURITY_PROTOCOL_IN");
         break;
     case SCSIOP_SEND_KEY:
-        //case SCSIOP_MAINTENANCE_IN:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SEND_KEY/SCSIOP_MAINTENANCE_IN");
+        // case SCSIOP_MAINTENANCE_IN:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SEND_KEY / SCSIOP_MAINTENANCE_IN");
         break;
     case SCSIOP_REPORT_KEY:
-        //case SCSIOP_MAINTENANCE_OUT:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_REPORT_KEY/SCSIOP_MAINTENANCE_OUT");
+        // case SCSIOP_MAINTENANCE_OUT:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_REPORT_KEY / SCSIOP_MAINTENANCE_OUT");
         break;
     case SCSIOP_MOVE_MEDIUM:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_MOVE_MEDIUM");
         break;
     case SCSIOP_LOAD_UNLOAD_SLOT:
-        //case SCSIOP_EXCHANGE_MEDIUM:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_LOAD_UNLOAD_SLOT/SCSIOP_EXCHANGE_MEDIUM");
+        // case SCSIOP_EXCHANGE_MEDIUM:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_LOAD_UNLOAD_SLOT / SCSIOP_EXCHANGE_MEDIUM");
         break;
     case SCSIOP_SET_READ_AHEAD:
-        //case SCSIOP_MOVE_MEDIUM_ATTACHED:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SET_READ_AHEAD/SCSIOP_MOVE_MEDIUM_ATTACHED");
+        // case SCSIOP_MOVE_MEDIUM_ATTACHED:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SET_READ_AHEAD / SCSIOP_MOVE_MEDIUM_ATTACHED");
         break;
     case SCSIOP_READ12:
-        //case SCSIOP_GET_MESSAGE:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ12/SCSIOP_GET_MESSAGE");
+        // case SCSIOP_GET_MESSAGE:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ12 / SCSIOP_GET_MESSAGE");
         break;
     case SCSIOP_SERVICE_ACTION_OUT12:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SERVICE_ACTION_OUT12");
@@ -330,8 +396,8 @@ void DebugScsiOpCode(UCHAR opcode)
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_WRITE12");
         break;
     case SCSIOP_SEND_MESSAGE:
-        //case SCSIOP_SERVICE_ACTION_IN12:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SEND_MESSAGE/SCSIOP_SERVICE_ACTION_IN12");
+        // case SCSIOP_SERVICE_ACTION_IN12:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SEND_MESSAGE / SCSIOP_SERVICE_ACTION_IN12");
         break;
     case SCSIOP_GET_PERFORMANCE:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_GET_PERFORMANCE");
@@ -361,12 +427,12 @@ void DebugScsiOpCode(UCHAR opcode)
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ_ELEMENT_STATUS_ATTACHED");
         break;
     case SCSIOP_REQUEST_VOL_ELEMENT:
-        //case SCSIOP_SECURITY_PROTOCOL_OUT:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_REQUEST_VOL_ELEMENT/SCSIOP_SECURITY_PROTOCOL_OUT");
+        // case SCSIOP_SECURITY_PROTOCOL_OUT:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_REQUEST_VOL_ELEMENT / SCSIOP_SECURITY_PROTOCOL_OUT");
         break;
     case SCSIOP_SEND_VOLUME_TAG:
-        //case SCSIOP_SET_STREAMING:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SEND_VOLUME_TAG/SCSIOP_SET_STREAMING");
+        // case SCSIOP_SET_STREAMING:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SEND_VOLUME_TAG / SCSIOP_SET_STREAMING");
         break;
     case SCSIOP_READ_DEFECT_DATA:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ_DEFECT_DATA");
@@ -378,53 +444,53 @@ void DebugScsiOpCode(UCHAR opcode)
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ_CD_MSF");
         break;
     case SCSIOP_SCAN_CD:
-        //case SCSIOP_REDUNDANCY_GROUP_IN:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SCAN_CD/SCSIOP_REDUNDANCY_GROUP_IN");
+        // case SCSIOP_REDUNDANCY_GROUP_IN:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SCAN_CD / SCSIOP_REDUNDANCY_GROUP_IN");
         break;
     case SCSIOP_SET_CD_SPEED:
-        //case SCSIOP_REDUNDANCY_GROUP_OUT:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SET_CD_SPEED/SCSIOP_REDUNDANCY_GROUP_OUT");
+        // case SCSIOP_REDUNDANCY_GROUP_OUT:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SET_CD_SPEED / SCSIOP_REDUNDANCY_GROUP_OUT");
         break;
     case SCSIOP_PLAY_CD:
-        //case SCSIOP_SPARE_IN:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_PLAY_CD/SCSIOP_SPARE_IN");
+        // case SCSIOP_SPARE_IN:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_PLAY_CD / SCSIOP_SPARE_IN");
         break;
     case SCSIOP_MECHANISM_STATUS:
-        //case SCSIOP_SPARE_OUT:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_MECHANISM_STATUS/SCSIOP_SPARE_OUT");
+        // case SCSIOP_SPARE_OUT:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_MECHANISM_STATUS / SCSIOP_SPARE_OUT");
         break;
     case SCSIOP_READ_CD:
-        //case SCSIOP_VOLUME_SET_IN:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ_CD/SCSIOP_VOLUME_SET_IN");
+        // case SCSIOP_VOLUME_SET_IN:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ_CD / SCSIOP_VOLUME_SET_IN");
         break;
     case SCSIOP_SEND_DVD_STRUCTURE:
-        //case SCSIOP_VOLUME_SET_OUT:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SEND_DVD_STRUCTURE/SCSIOP_VOLUME_SET_OUT");
+        // case SCSIOP_VOLUME_SET_OUT:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SEND_DVD_STRUCTURE / SCSIOP_VOLUME_SET_OUT");
         break;
     case SCSIOP_INIT_ELEMENT_RANGE:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_INIT_ELEMENT_RANGE");
         break;
 
-        // 16-byte commands
+        //  16-byte commands
     case SCSIOP_XDWRITE_EXTENDED16:
-        //case SCSIOP_WRITE_FILEMARKS16:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_XDWRITE_EXTENDED16/SCSIOP_WRITE_FILEMARKS16");
+        // case SCSIOP_WRITE_FILEMARKS16:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_XDWRITE_EXTENDED16 / SCSIOP_WRITE_FILEMARKS16");
         break;
     case SCSIOP_REBUILD16:
-        //case SCSIOP_READ_REVERSE16:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_REBUILD16/SCSIOP_READ_REVERSE16");
+        // case SCSIOP_READ_REVERSE16:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_REBUILD16 / SCSIOP_READ_REVERSE16");
         break;
     case SCSIOP_REGENERATE16:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_REGENERATE16");
         break;
     case SCSIOP_EXTENDED_COPY:
-        //case SCSIOP_POPULATE_TOKEN:
-        //case SCSIOP_WRITE_USING_TOKEN:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_EXTENDED_COPY/POPULATE_TOKEN/WRITE_USING_TOKEN");
+        // case SCSIOP_POPULATE_TOKEN:
+        // case SCSIOP_WRITE_USING_TOKEN:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_EXTENDED_COPY / POPULATE_TOKEN / WRITE_USING_TOKEN");
         break;
     case SCSIOP_RECEIVE_COPY_RESULTS:
-        //case SCSIOP_RECEIVE_ROD_TOKEN_INFORMATION:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_RECEIVE_COPY_RESULTS/SCSIOP_RECEIVE_ROD_TOKEN_INFORMATION");
+        // case SCSIOP_RECEIVE_ROD_TOKEN_INFORMATION:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_RECEIVE_COPY_RESULTS / SCSIOP_RECEIVE_ROD_TOKEN_INFORMATION");
         break;
     case SCSIOP_ATA_PASSTHROUGH16:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_ATA_PASSTHROUGH16");
@@ -460,16 +526,16 @@ void DebugScsiOpCode(UCHAR opcode)
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_PREFETCH16");
         break;
     case SCSIOP_SYNCHRONIZE_CACHE16:
-        //case SCSIOP_SPACE16:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SYNCHRONIZE_CACHE16/SCSIOP_SPACE16");
+        // case SCSIOP_SPACE16:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SYNCHRONIZE_CACHE16 / SCSIOP_SPACE16");
         break;
     case SCSIOP_LOCK_UNLOCK_CACHE16:
-        //case SCSIOP_LOCATE16:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_LOCK_UNLOCK_CACHE16/SCSIOP_LOCATE16");
+        // case SCSIOP_LOCATE16:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_LOCK_UNLOCK_CACHE16 / SCSIOP_LOCATE16");
         break;
     case SCSIOP_WRITE_SAME16:
-        //case SCSIOP_ERASE16:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_WRITE_SAME16/SCSIOP_ERASE16");
+        // case SCSIOP_ERASE16:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_WRITE_SAME16 / SCSIOP_ERASE16");
         break;
     case SCSIOP_ZBC_OUT:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_ZBC_OUT");
@@ -481,28 +547,29 @@ void DebugScsiOpCode(UCHAR opcode)
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_READ_DATA_BUFF16");
         break;
     case SCSIOP_READ_CAPACITY16:
-        //case SCSIOP_GET_LBA_STATUS:
-        //case SCSIOP_GET_PHYSICAL_ELEMENT_STATUS:
-        //case SCSIOP_REMOVE_ELEMENT_AND_TRUNCATE:
-        //case SCSIOP_SERVICE_ACTION_IN16:
-        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_GET_LBA_STATUS/GET_PHYSICAL_ELEMENT_STATUS/REMOVE_ELEMENT_AND_TRUNCATE/SERVICE_ACTION_IN16");
+        // case SCSIOP_GET_LBA_STATUS:
+        // case SCSIOP_GET_PHYSICAL_ELEMENT_STATUS:
+        // case SCSIOP_REMOVE_ELEMENT_AND_TRUNCATE:
+        // case SCSIOP_SERVICE_ACTION_IN16:
+        RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_GET_LBA_STATUS / GET_PHYSICAL_ELEMENT_STATUS / REMOVE_ELEMENT_AND_TRUNCATE / SERVICE_ACTION_IN16");
         break;
     case SCSIOP_SERVICE_ACTION_OUT16:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_SERVICE_ACTION_OUT16");
         break;
 
-        // 32-byte commands                  
+        //  32-byte commands                  
     case SCSIOP_OPERATION32:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "SCSIOP_OPERATION32");
         break;
     }
 
-    DbgPrintEx(DPFLTR_IHVDRIVER_ID, DBG_FILTER, "%s Got SCSI Cmd(%s)\n", DEBUG_PREFIX, msg);
-    delete msg;
+    DbgPrintEx(DPFLTR_IHVDRIVER_ID, DBG_FILTER, "%s Got SCSI Cmd(%s)\n", DEBUG_PREFIX, msg.Get());
+//    delete msg;
 }
 void DebugSrbFunctionCode(ULONG code)
 {
-    char *msg = new (NonPagedPoolNx, TAG_GENERIC) char[MSG_BUFFER_SIZE];
+//    char *msg = new (NonPagedPoolNx, TAG_GENERIC) char[MSG_BUFFER_SIZE];
+    CAutoPtr<char> msg(new(NonPagedPoolNx, TAG_GENERIC) char[MSG_BUFFER_SIZE]);
 
     switch (code)
     {
@@ -595,6 +662,6 @@ void DebugSrbFunctionCode(ULONG code)
         break;
     }
 
-    DbgPrintEx(DPFLTR_IHVDRIVER_ID, DBG_FILTER, "%s Got SRB cmd, code (%s)\n", DEBUG_PREFIX, msg);
-    delete msg;
+    DbgPrintEx(DPFLTR_IHVDRIVER_ID, DBG_FILTER, "%s Got SRB cmd, code (%s)\n", DEBUG_PREFIX, msg.Get());
+//    delete msg;
 }

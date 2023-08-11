@@ -1,6 +1,6 @@
 #include "precompile.h"
 
-SCSI_ADAPTER_CONTROL_STATUS HandleQueryControlTypeList(
+SCSI_ADAPTER_CONTROL_STATUS HandleQueryAdapterControlTypes(
     PSCSI_SUPPORTED_CONTROL_TYPE_LIST ctl_list) 
 {
     CDebugCallInOut inout(__FUNCTION__);
