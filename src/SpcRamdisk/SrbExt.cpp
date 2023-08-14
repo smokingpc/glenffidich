@@ -10,11 +10,15 @@ PSPC_SRBEXT GetSrbExt(PSTORAGE_REQUEST_BLOCK srb, PVOID devext)
     if (NULL != srb)
     {
         srbext->Cdb = SrbGetCdb(srb);
+        srbext->CdbLen = SrbGetCdbLength(srb);
         srbext->TargetID = SrbGetTargetId(srb);
         srbext->Lun = SrbGetLun(srb);
         srbext->ScsiTag = SrbGetRequestTag(srb);
         srbext->FuncCode = SrbGetSrbFunction(srb);
         srbext->PnpData = (PSRBEX_DATA_PNP)SrbGetSrbExDataByType(srb, SrbExDataTypePnP);
+        srbext->DataBuffer = SrbGetDataBuffer(srb);
+        srbext->DataBufLen = SrbGetDataTransferLength(srb);
+
     }
 
     return srbext;

@@ -36,7 +36,7 @@ SpcRamDisk.sys
 
 ;-------------- Service installation
 [DiskInstall.NT.Services]
-AddService = "RamDisk",%SPSVCINST_ASSOCSERVICE%,SpcRamDisk.Service
+AddService = "spcrd",%SPSVCINST_ASSOCSERVICE%,SpcRamDisk.Service
 
 ; -------------- RamDiskDriver driver install sections
 [SpcRamDisk.Service]

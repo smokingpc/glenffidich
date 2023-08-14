@@ -41,7 +41,7 @@
 #define GigaBytes       1073741824  //1024*1024*1024
 #define MAX_TX_PAGES    (256)
 #define MAX_TX_SIZE     (MAX_TX_PAGES * PAGE_SIZE)
-#define MAX_IO_PER_LUN  64
+#define MAX_IO_PER_LUN  1024
 #define SUPPORTED_LU    1
 #define MAX_TOTAL_IO    (MAX_IO_PER_LUN*SUPPORTED_LU)
 #define PAUSE_ADAPTER_TIMEOUT   5//in seconds
