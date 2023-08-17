@@ -123,7 +123,28 @@ void ParseLbaBlockAndOffset(OUT ULONG64& start_block, OUT ULONG& length, PCDB cd
 //}
 UCHAR ReadWriteRamdisk(PSPC_SRBEXT srbext, BOOLEAN is_write)
 {
+    ULONG blocks = 0;
+    ULONG64 start_block = 0;
+    NTSTATUS status = STATUS_SUCCESS;
+    UCHAR srb_status = SRB_STATUS_SUCCESS;
     srbext->IsWrite = is_write;
-    srbext->DevExt->PushIoRequest(srbext);
-    return SRB_STATUS_PENDING;
+    ParseLbaBlockAndOffset(start_block, blocks, srbext->Cdb);
+    if (!srbext->IsWrite)
+    {
+        status = srbext->DevExt->ReadLBA(start_block, blocks, srbext->DataBuffer);
+    }
+    else
+    {
+        status = srbext->DevExt->WriteLBA(start_block, blocks, srbext->DataBuffer);
+    }
+
+    if (NT_SUCCESS(status))
+        srb_status = SRB_STATUS_SUCCESS;
+    else
+        srb_status = SRB_STATUS_ERROR;
+
+
+    return srb_status;    
+//    srbext->DevExt->PushIoRequest(srbext);
+//    return SRB_STATUS_PENDING;
 }

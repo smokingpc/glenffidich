@@ -63,11 +63,13 @@ typedef struct _SPC_DEVEXT {
     ULONG_PTR TotalBlocks;
     INT64 MaxLBA;
 
+#if 0
     SLIST_HEADER RequestHead;
     WORKER_THREAD_CTX WorkerCtx[4];
     KEVENT EventRequestArrived;//StopThread;
     bool FlagStopThread;
     LARGE_INTEGER ThreadInterval;
+#endif
     void Setup();
     void Teardown();
 
@@ -78,13 +80,14 @@ typedef struct _SPC_DEVEXT {
     NTSTATUS Read(ULONG_PTR offset, ULONG length, PVOID buffer);
     NTSTATUS Write(ULONG_PTR offset, ULONG length, PVOID buffer);
 
+#if 0
     void PushIoRequest(PVOID srbext);
     PVOID PopIoRequest();
     ULONG ProcessIoRequests();
     ULONG AbortIoRequests();
     void StartWorkerThread();
     void StopWorkerThread();
-
+#endif
     void SetSize(size_t total_size, ULONG size_of_block);
     void LoadRegistry();
     void LoadDefault();

@@ -1,5 +1,5 @@
 #include "precompile.h"
-
+#if 0
 void IoWorkerThreadRoutine(PVOID thread_ctx)
 {
     PWORKER_THREAD_CTX ctx = (PWORKER_THREAD_CTX)thread_ctx;
@@ -16,6 +16,7 @@ void IoWorkerThreadRoutine(PVOID thread_ctx)
     devext->AbortIoRequests();
     ctx->IsStopped = true;
 }
+#endif
 
 void _SPC_DEVEXT::Setup()
 {
@@ -26,13 +27,9 @@ void _SPC_DEVEXT::Setup()
     LoadDefault();
     LoadRegistry();
     Disk = (PUCHAR) new(NonPagedPoolNx, TAG_DISKMEM) UCHAR[(size_t)TotalDiskBytes];
-
-    ExInitializeSListHead(&RequestHead);
-    StartWorkerThread();
 }
 void _SPC_DEVEXT::Teardown()
 {
-    StopWorkerThread();
     if(NULL != Disk)
     {
         delete Disk;
@@ -81,6 +78,7 @@ NTSTATUS _SPC_DEVEXT::Write(ULONG_PTR offset, ULONG length, PVOID buffer)
     return STATUS_SUCCESS;
 }
 
+#if 0
 void _SPC_DEVEXT::PushIoRequest(PVOID arg)
 {
     //srbext->List is located at beginning of SPC_SRBEXT.
@@ -172,6 +170,7 @@ void _SPC_DEVEXT::StopWorkerThread()
         KeDelayExecutionThread(KernelMode, FALSE, &timeout);
     //StorPortWaitForSingleObject(this, &WorkerThread[0], FALSE, &timeout);
 }
+#endif
 
 void _SPC_DEVEXT::SetSize(size_t total_bytes, ULONG bytes_of_block)
 {
