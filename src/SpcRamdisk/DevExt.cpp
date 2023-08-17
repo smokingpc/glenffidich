@@ -141,27 +141,34 @@ ULONG _SPC_DEVEXT::AbortIoRequests()
 void _SPC_DEVEXT::StartWorkerThread()
 {
     NTSTATUS status = STATUS_SUCCESS;
-    KeInitializeEvent(&EventStopThread, NotificationEvent, FALSE);
-    RtlZeroMemory(&WorkerCtx, sizeof(WorkerCtx));
+    KeInitializeEvent(&EventRequestArrived, SynchronizationEvent, FALSE);
+    RtlZeroMemory(WorkerCtx, sizeof(WorkerCtx));
     //StorPortCreateSystemThread is implemented since Win2022.
     //Use PsCreateSystemThread instead of it.
-    WorkerCtx.DevExt = this;
-    WorkerCtx.Interval;
-    WorkerCtx.IsStopped = false;
-    WorkerCtx.StopEventPtr = &EventStopThread;
-    WorkerCtx.ThreadHandle = NULL;
-    status = PsCreateSystemThread(&WorkerCtx.ThreadHandle, 
-            THREAD_ALL_ACCESS, NULL, NULL, NULL, 
-            IoWorkerThreadRoutine, &WorkerCtx);
-    ASSERT(status == STATUS_SUCCESS);
+    FlagStopThread = false;
+    for(int i=0; i<4; i++)
+    {
+        WorkerCtx[i].DevExt = this;
+        WorkerCtx[i].Interval.QuadPart = WORKER_INTERVAL;
+        WorkerCtx[i].IsStopped = false;
+        WorkerCtx[i].StopEventPtr = &EventRequestArrived;
+        WorkerCtx[i].ThreadHandle = NULL;
+        status = PsCreateSystemThread(&WorkerCtx[i].ThreadHandle, 
+                THREAD_ALL_ACCESS, NULL, NULL, NULL, 
+                IoWorkerThreadRoutine, &WorkerCtx[i]);
+        ASSERT(status == STATUS_SUCCESS);
+    }
 }
 void _SPC_DEVEXT::StopWorkerThread()
 {
     LARGE_INTEGER timeout = {0};
     timeout.QuadPart = -10 * 1000 * 100;
-    KeSetEvent(&EventStopThread, IO_NO_INCREMENT, FALSE);
+    FlagStopThread = true;
+    for (int i = 0; i < 4; i++)
+        KeSetEvent(&EventRequestArrived, IO_NO_INCREMENT, FALSE);
 
-    while(!WorkerCtx.IsStopped)
+    while(!(WorkerCtx[0].IsStopped && WorkerCtx[1].IsStopped
+                && WorkerCtx[2].IsStopped && WorkerCtx[3].IsStopped))
         KeDelayExecutionThread(KernelMode, FALSE, &timeout);
     //StorPortWaitForSingleObject(this, &WorkerThread[0], FALSE, &timeout);
 }

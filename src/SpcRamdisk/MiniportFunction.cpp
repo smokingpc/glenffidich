@@ -73,7 +73,7 @@ BOOLEAN HwInitialize(PVOID DeviceExtension)
     if (0 != (query.Flags & STOR_PERF_CONCURRENT_CHANNELS))
     {
         set.Flags |= STOR_PERF_CONCURRENT_CHANNELS;
-        set.ConcurrentChannels = max(MIN_CONCURRENT_IO, KeQueryActiveProcessorCountEx(ALL_PROCESSOR_GROUPS));
+        set.ConcurrentChannels = KeQueryActiveProcessorCountEx(ALL_PROCESSOR_GROUPS);
     }
     //I don't use SGL... but Win10 don't support this flag
     if (0 != (query.Flags & STOR_PERF_NO_SGL))

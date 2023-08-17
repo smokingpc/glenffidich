@@ -64,8 +64,9 @@ typedef struct _SPC_DEVEXT {
     INT64 MaxLBA;
 
     SLIST_HEADER RequestHead;
-    WORKER_THREAD_CTX WorkerCtx;
-    KEVENT EventStopThread;
+    WORKER_THREAD_CTX WorkerCtx[4];
+    KEVENT EventRequestArrived;//StopThread;
+    bool FlagStopThread;
     LARGE_INTEGER ThreadInterval;
     void Setup();
     void Teardown();
