@@ -34,6 +34,14 @@
 // Enjoy it.
 // ================================================================
 
+typedef struct _WORKER_THREAD_CTX {
+    HANDLE ThreadHandle;
+    PVOID DevExt;
+    bool IsStopped;
+    KEVENT *StopEventPtr;
+    LARGE_INTEGER Interval;
+}WORKER_THREAD_CTX, *PWORKER_THREAD_CTX;
+
 //DeviceExtension for Ramdisk, this is "per instance" context
 typedef struct _SPC_DEVEXT {
     static constexpr UCHAR LABEL_DISKSIZE[] = "DiskSize";
@@ -56,10 +64,9 @@ typedef struct _SPC_DEVEXT {
     INT64 MaxLBA;
 
     SLIST_HEADER RequestHead;
-    PVOID WorkerThread[2];
+    WORKER_THREAD_CTX WorkerCtx;
     KEVENT EventStopThread;
     LARGE_INTEGER ThreadInterval;
-
     void Setup();
     void Teardown();
 
@@ -73,6 +80,9 @@ typedef struct _SPC_DEVEXT {
     void PushIoRequest(PVOID srbext);
     PVOID PopIoRequest();
     ULONG ProcessIoRequests();
+    ULONG AbortIoRequests();
+    void StartWorkerThread();
+    void StopWorkerThread();
 
     void SetSize(size_t total_size, ULONG size_of_block);
     void LoadRegistry();

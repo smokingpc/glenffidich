@@ -1,19 +1,20 @@
 #include "precompile.h"
 
-STOR_THREAD_START_ROUTINE IoWorkerThreadRoutine;
-
-void IoWorkerThreadRoutine(PVOID start_ctx)
+void IoWorkerThreadRoutine(PVOID thread_ctx)
 {
-    PSPC_DEVEXT devext = (PSPC_DEVEXT) start_ctx;
+    PWORKER_THREAD_CTX ctx = (PWORKER_THREAD_CTX)thread_ctx;
+    PSPC_DEVEXT devext = (PSPC_DEVEXT)ctx->DevExt;
     ULONG counter = 0;
 
-    while(STATUS_WAIT_0 != KeWaitForSingleObject(&devext->EventStopThread, 
-                Executive, KernelMode, FALSE, &devext->ThreadInterval))
+    while(STATUS_WAIT_0 != KeWaitForSingleObject(ctx->StopEventPtr,
+                Executive, KernelMode, FALSE, &ctx->Interval))
     {
         counter = devext->ProcessIoRequests();
         KdPrintEx((DPFLTR_IHVDRIVER_ID, 1, "WorkerThread processed [%lu] Srb\n", counter));
     }
 
+    devext->AbortIoRequests();
+    ctx->IsStopped = true;
 }
 
 void _SPC_DEVEXT::Setup()
@@ -27,15 +28,11 @@ void _SPC_DEVEXT::Setup()
     Disk = (PUCHAR) new(NonPagedPoolNx, TAG_DISKMEM) UCHAR[(size_t)TotalDiskBytes];
 
     ExInitializeSListHead(&RequestHead);
-    KeInitializeEvent(&EventStopThread, SynchronizationEvent, FALSE);
-    ThreadInterval.QuadPart = WORKER_INTERVAL;
-    STOR_THREAD_PRIORITY priority = STOR_THREAD_PRIORITY::StorThreadPriorityNormal;
-    RtlZeroMemory(WorkerThread, sizeof(WorkerThread));
-    StorPortCreateSystemThread(this, IoWorkerThreadRoutine, this, &priority, &WorkerThread[0]);
-    //StorPortCreateSystemThread(this, IoWorkerThreadRoutine, this, &priority, &WorkerThread[1]);
+    StartWorkerThread();
 }
 void _SPC_DEVEXT::Teardown()
 {
+    StopWorkerThread();
     if(NULL != Disk)
     {
         delete Disk;
@@ -127,6 +124,47 @@ ULONG _SPC_DEVEXT::ProcessIoRequests()
     }
     return count;
 }
+ULONG _SPC_DEVEXT::AbortIoRequests()
+{
+    ULONG count = 0;
+    while (true)
+    {
+        PSPC_SRBEXT srbext = (PSPC_SRBEXT)PopIoRequest();
+        if (NULL == srbext)
+            break;
+
+        srbext->CompleteSrb(SRB_STATUS_ABORTED);
+        count++;
+    }
+    return count;
+}
+void _SPC_DEVEXT::StartWorkerThread()
+{
+    NTSTATUS status = STATUS_SUCCESS;
+    KeInitializeEvent(&EventStopThread, NotificationEvent, FALSE);
+    RtlZeroMemory(&WorkerCtx, sizeof(WorkerCtx));
+    //StorPortCreateSystemThread is implemented since Win2022.
+    //Use PsCreateSystemThread instead of it.
+    WorkerCtx.DevExt = this;
+    WorkerCtx.Interval;
+    WorkerCtx.IsStopped = false;
+    WorkerCtx.StopEventPtr = &EventStopThread;
+    WorkerCtx.ThreadHandle = NULL;
+    status = PsCreateSystemThread(&WorkerCtx.ThreadHandle, 
+            THREAD_ALL_ACCESS, NULL, NULL, NULL, 
+            IoWorkerThreadRoutine, &WorkerCtx);
+    ASSERT(status == STATUS_SUCCESS);
+}
+void _SPC_DEVEXT::StopWorkerThread()
+{
+    LARGE_INTEGER timeout = {0};
+    timeout.QuadPart = -10 * 1000 * 100;
+    KeSetEvent(&EventStopThread, IO_NO_INCREMENT, FALSE);
+
+    while(!WorkerCtx.IsStopped)
+        KeDelayExecutionThread(KernelMode, FALSE, &timeout);
+    //StorPortWaitForSingleObject(this, &WorkerThread[0], FALSE, &timeout);
+}
 
 void _SPC_DEVEXT::SetSize(size_t total_bytes, ULONG bytes_of_block)
 {
@@ -180,4 +218,3 @@ void _SPC_DEVEXT::LoadRegistry()
     SetSize(size, block_size);
     StorPortFreeRegistryBuffer(this, buffer);
 }
-

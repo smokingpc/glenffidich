@@ -146,7 +146,8 @@ BOOLEAN HwStartIo(
         break;
     }
 
-    srbext->CompleteSrb(srb_status);
+    if(SRB_STATUS_PENDING != srb_status)
+        srbext->CompleteSrb(srb_status);
     return TRUE;
 }
 

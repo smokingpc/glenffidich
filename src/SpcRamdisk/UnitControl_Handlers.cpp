@@ -41,7 +41,6 @@ SCSI_UNIT_CONTROL_STATUS HandleScsiUnitStart(PSPC_DEVEXT devext, STOR_ADDR_BTL8*
     ASSERT(0 == param->Path);
     ASSERT(0 == param->Target);
     ASSERT(0 == param->Lun);
-    DbgBreakPoint();
     return ScsiUnitControlSuccess;
 }
 SCSI_UNIT_CONTROL_STATUS HandleScsiUnitPower(PSPC_DEVEXT devext, STOR_UNIT_CONTROL_POWER* param)
@@ -91,7 +90,7 @@ SCSI_UNIT_CONTROL_STATUS HandleScsiUnitRemove(PSPC_DEVEXT devext, STOR_ADDR_BTL8
     UNREFERENCED_PARAMETER(devext);
     DbgPrintEx(DPFLTR_IHVDRIVER_ID, DBG_FILTER, "%s[ScsiUnitRemove], Path[%d] Target[%d] Lun[%d] is removed\n",
         DEBUG_PREFIX, param->Path, param->Target, param->Lun);
-    DbgBreakPoint();
+
     return ScsiUnitControlSuccess;
 }
 SCSI_UNIT_CONTROL_STATUS HandleScsiUnitSurpriseRemoval(PSPC_DEVEXT devext, STOR_ADDR_BTL8* param)
@@ -99,7 +98,7 @@ SCSI_UNIT_CONTROL_STATUS HandleScsiUnitSurpriseRemoval(PSPC_DEVEXT devext, STOR_
     UNREFERENCED_PARAMETER(devext);
     DbgPrintEx(DPFLTR_IHVDRIVER_ID, DBG_FILTER, "%s[ScsiUnitSurpriseRemoval], Path[%d] Target[%d] Lun[%d] is surprise removed\n",
         DEBUG_PREFIX, param->Path, param->Target, param->Lun);
-    DbgBreakPoint();
+
     return ScsiUnitControlSuccess;
 }
 SCSI_UNIT_CONTROL_STATUS HandleScsiUnitRichDescription(PSPC_DEVEXT devext, STOR_RICH_DEVICE_DESCRIPTION* param)
