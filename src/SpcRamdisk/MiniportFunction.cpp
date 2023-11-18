@@ -7,7 +7,7 @@ ULONG HwFindAdapter(
     _In_ PVOID BusInformation,
     _In_ PVOID LowerDevice,
     _In_ PCHAR ArgumentString,
-    _Inout_ PPORT_CONFIGURATION_INFORMATION ConfigInfo,
+    _Inout_ PPORT_CONFIGURATION_INFORMATION PortInfo,
     _In_ PBOOLEAN Reserved3)
 {
     CDebugCallInOut inout(__FUNCTION__);
@@ -20,37 +20,37 @@ ULONG HwFindAdapter(
     PSPC_DEVEXT devext = (PSPC_DEVEXT)DeviceExtension;
     devext->Setup();
 
-    ConfigInfo->MaximumTransferLength = MAX_TX_SIZE;
-    ConfigInfo->NumberOfPhysicalBreaks = MAX_TX_PAGES;
-    ConfigInfo->AlignmentMask = FILE_LONG_ALIGNMENT;
-    ConfigInfo->MiniportDumpData = NULL;
-    ConfigInfo->InitiatorBusId[0] = 1;
-    ConfigInfo->CachesData = FALSE;
-    ConfigInfo->MapBuffers = STOR_MAP_ALL_BUFFERS_INCLUDING_READ_WRITE; //specify bounce buffer type?
-    ConfigInfo->MaximumNumberOfTargets = 1;
-    ConfigInfo->SrbType = SRB_TYPE_STORAGE_REQUEST_BLOCK;
-    ConfigInfo->DeviceExtensionSize = sizeof(SPC_DEVEXT);
-    ConfigInfo->SrbExtensionSize = sizeof(SPC_SRBEXT);
-    ConfigInfo->MaximumNumberOfLogicalUnits = SUPPORTED_LU;
-    ConfigInfo->SynchronizationModel = StorSynchronizeFullDuplex;
-    ConfigInfo->HwMSInterruptRoutine = NULL;
-    ConfigInfo->InterruptSynchronizationMode = InterruptSupportNone;
-    ConfigInfo->VirtualDevice = TRUE;
-    ConfigInfo->MaxIOsPerLun = MAX_IO_PER_LUN;
-    ConfigInfo->MaxNumberOfIO = MAX_TOTAL_IO;
-    ConfigInfo->NumberOfBuses = 1;
-    ConfigInfo->ScatterGather = TRUE;
-    ConfigInfo->Master = TRUE;
-    ConfigInfo->AddressType = STORAGE_ADDRESS_TYPE_BTL8;
-    ConfigInfo->Dma64BitAddresses = SCSI_DMA64_MINIPORT_FULL64BIT_SUPPORTED;
+    PortInfo->MaximumTransferLength = MAX_TX_SIZE;
+    PortInfo->NumberOfPhysicalBreaks = MAX_TX_PAGES;
+    PortInfo->AlignmentMask = FILE_LONG_ALIGNMENT;
+    PortInfo->MiniportDumpData = NULL;
+    PortInfo->InitiatorBusId[0] = 1;
+    PortInfo->CachesData = FALSE;
+    PortInfo->MapBuffers = STOR_MAP_ALL_BUFFERS_INCLUDING_READ_WRITE; //specify bounce buffer type?
+    PortInfo->MaximumNumberOfTargets = 1;
+    PortInfo->SrbType = SRB_TYPE_STORAGE_REQUEST_BLOCK;
+    PortInfo->DeviceExtensionSize = sizeof(SPC_DEVEXT);
+    PortInfo->SrbExtensionSize = sizeof(SPC_SRBEXT);
+    PortInfo->MaximumNumberOfLogicalUnits = SUPPORTED_LU;
+    PortInfo->SynchronizationModel = StorSynchronizeFullDuplex;
+    PortInfo->HwMSInterruptRoutine = NULL;
+    PortInfo->InterruptSynchronizationMode = InterruptSupportNone;
+    PortInfo->VirtualDevice = TRUE;
+    PortInfo->MaxIOsPerLun = MAX_IO_PER_LUN;
+    PortInfo->MaxNumberOfIO = MAX_TOTAL_IO;
+    PortInfo->NumberOfBuses = 1;
+    PortInfo->ScatterGather = TRUE;
+    PortInfo->Master = TRUE;
+    PortInfo->AddressType = STORAGE_ADDRESS_TYPE_BTL8;
+    PortInfo->Dma64BitAddresses = SCSI_DMA64_MINIPORT_FULL64BIT_SUPPORTED;
 
-    ConfigInfo->DumpRegion.VirtualBase = NULL;
-    ConfigInfo->DumpRegion.PhysicalBase.QuadPart = NULL;
-    ConfigInfo->DumpRegion.Length = 0;
+    PortInfo->DumpRegion.VirtualBase = NULL;
+    PortInfo->DumpRegion.PhysicalBase.QuadPart = NULL;
+    PortInfo->DumpRegion.Length = 0;
     // If the buffer is not mapped, DataBuffer is the same as MDL's original virtual address, 
     // which could even be zero.
-    ConfigInfo->RequestedDumpBufferSize = 0;
-    ConfigInfo->FeatureSupport = 0;
+    PortInfo->RequestedDumpBufferSize = 0;
+    PortInfo->FeatureSupport = 0;
     return SP_RETURN_FOUND;
 }
 _Use_decl_annotations_ 
@@ -123,7 +123,6 @@ BOOLEAN HwStartIo(
     switch (srbext->FuncCode)
     {
         //case SRB_FUNCTION_ABORT_COMMAND:
-        //case SRB_FUNCTION_RESET_LOGICAL_UNIT:
         //case SRB_FUNCTION_RESET_DEVICE:
         //case SRB_FUNCTION_RESET_BUS:
         //case SRB_FUNCTION_WMI:
@@ -140,6 +139,13 @@ BOOLEAN HwStartIo(
     case SRB_FUNCTION_EXECUTE_SCSI:
         //scsi handlers
         srb_status = StartIo_HandleScsiCmd(srbext);
+        break;
+    case SRB_FUNCTION_RESET_LOGICAL_UNIT:
+        //if specified LU has timeout requests, storport will send this cmd
+        //3 times. If still has timeout requests after 3 SRB_FUNCTION_RESET_LOGICAL_UNIT,
+        //storport calls HwResetBus.
+        //Ramdisk has no async request. so no handler for this cmd.
+        srb_status = SRB_STATUS_INVALID_REQUEST;
         break;
     default:
         srb_status = SRB_STATUS_INVALID_REQUEST;
