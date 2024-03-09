@@ -63,5 +63,5 @@ private:
     KSPIN_LOCK* Lock = NULL;
     KIRQL OldIrql = PASSIVE_LEVEL;
     bool IsAcquired = false;
-    KLOCK_QUEUE_HANDLE QueueHandle = {};
+    KLOCK_QUEUE_HANDLE QueueHandle = {0};
 };

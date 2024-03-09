@@ -140,6 +140,13 @@ BOOLEAN HwStartIo(
         //scsi handlers
         srb_status = StartIo_HandleScsiCmd(srbext);
         break;
+    case SRB_FUNCTION_FLUSH:
+    case SRB_FUNCTION_SHUTDOWN:
+        srb_status = SRB_STATUS_SUCCESS;
+        break;
+    case SRB_FUNCTION_FLUSH_QUEUE:
+        srb_status = SRB_STATUS_REQUEST_FLUSHED;
+        break;
     case SRB_FUNCTION_RESET_LOGICAL_UNIT:
         //if specified LU has timeout requests, storport will send this cmd
         //3 times. If still has timeout requests after 3 SRB_FUNCTION_RESET_LOGICAL_UNIT,

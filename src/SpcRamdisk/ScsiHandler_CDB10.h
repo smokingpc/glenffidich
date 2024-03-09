@@ -41,3 +41,4 @@ UCHAR Scsi_ReadCapacity10(PSPC_SRBEXT srbext);
 UCHAR Scsi_Verify10(PSPC_SRBEXT srbext);
 UCHAR Scsi_ModeSelect10(PSPC_SRBEXT srbext);
 UCHAR Scsi_ModeSense10(PSPC_SRBEXT srbext);
+UCHAR Scsi_SynchronizeCache10(PSPC_SRBEXT srbext);

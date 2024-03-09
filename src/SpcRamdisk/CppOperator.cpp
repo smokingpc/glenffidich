@@ -1,33 +1,31 @@
 #include "precompile.h"
 
-void* __cdecl operator new (size_t size)
+static __inline PVOID AllocatePoolMemory(POOL_TYPE type, size_t size, ULONG tag)
 {
-    PVOID ptr = ExAllocatePoolWithTag(PagedPool, size, TAG_CPP);
-    if (nullptr != ptr)
-        RtlZeroMemory(ptr, size);
-    return ptr;
-}
-void* operator new (size_t size, POOL_TYPE type, ULONG tag)
-{
-    PVOID ptr = ExAllocatePoolWithTag(type, size, tag);
+//In HLK2022 SDV, ExAllocatePoolWithTag() will be treat as error because obsoleted.
+//Replace this API by ExAllocatePoolUninitialized().
+    PVOID ptr = ExAllocatePoolUninitialized(type, size, tag);
     if (nullptr != ptr)
         RtlZeroMemory(ptr, size);
     return ptr;
 }
 
+void* __cdecl operator new (size_t size)
+{
+    return AllocatePoolMemory(NonPagedPool, size, TAG_CPP);
+}
+void* operator new (size_t size, POOL_TYPE type, ULONG tag)
+{
+    return AllocatePoolMemory(type, size, tag);
+}
+
 void* __cdecl operator new[](size_t size)
 {
-    PVOID ptr = ExAllocatePoolWithTag(PagedPool, size, TAG_CPP);
-    if (nullptr != ptr)
-        RtlZeroMemory(ptr, size);
-    return ptr;
+    return AllocatePoolMemory(NonPagedPool, size, TAG_CPP);
 }
 void* operator new[](size_t size, POOL_TYPE type, ULONG tag)
 {
-    PVOID ptr = ExAllocatePoolWithTag(type, size, tag);
-    if (nullptr != ptr)
-        RtlZeroMemory(ptr, size);
-    return ptr;
+    return AllocatePoolMemory(type, size, tag);
 }
 
 void __cdecl operator delete (void* ptr, size_t size)
