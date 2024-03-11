@@ -25,7 +25,7 @@ ULONG HwFindAdapter(
     PortInfo->AlignmentMask = FILE_LONG_ALIGNMENT;
     PortInfo->MiniportDumpData = NULL;
     PortInfo->InitiatorBusId[0] = 1;
-    PortInfo->CachesData = FALSE;
+    PortInfo->CachesData = FALSE;   //If set it to TRUE, miniport will receive SRB_FUNCTION_FLUSH after SCSIOP_SYNCRHONIZE_CACHE when flushing cache.
     PortInfo->MapBuffers = STOR_MAP_ALL_BUFFERS_INCLUDING_READ_WRITE; //specify bounce buffer type?
     PortInfo->MaximumNumberOfTargets = 1;
     PortInfo->SrbType = SRB_TYPE_STORAGE_REQUEST_BLOCK;
