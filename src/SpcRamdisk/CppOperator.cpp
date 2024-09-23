@@ -25,7 +25,7 @@ void* __cdecl operator new[](size_t size)
 void* operator new[](size_t size, POOL_TYPE type, ULONG tag)
 {
     return AllocatePoolMemory(type, size, tag);
-
+}
 void __cdecl operator delete (void* ptr, size_t size)
 {
     UNREFERENCED_PARAMETER(size);
