@@ -1,6 +1,6 @@
 #include "precompile.h"
 
-CAutoSpinLock::CAutoSpinLock(KSPIN_LOCK* lock, bool lock_now)
+CSpinLock::CSpinLock(KSPIN_LOCK* lock, bool lock_now)
 {
     Lock = lock;
     OldIrql = PASSIVE_LEVEL;
@@ -9,11 +9,11 @@ CAutoSpinLock::CAutoSpinLock(KSPIN_LOCK* lock, bool lock_now)
     if (lock_now)
         DoAcquire();
 }
-CAutoSpinLock::~CAutoSpinLock()
+CSpinLock::~CSpinLock()
 {
     DoRelease();
 }
-void CAutoSpinLock::DoAcquire()
+void CSpinLock::DoAcquire()
 {
     if (!IsAcquired)
     {
@@ -21,7 +21,7 @@ void CAutoSpinLock::DoAcquire()
         KeAcquireSpinLock(Lock, &OldIrql);
     }
 }
-void CAutoSpinLock::DoRelease()
+void CSpinLock::DoRelease()
 {
     if (IsAcquired)
     {
@@ -30,7 +30,7 @@ void CAutoSpinLock::DoRelease()
     }
 }
 
-CAutoQueuedSpinLock::CAutoQueuedSpinLock(KSPIN_LOCK* lock, bool lock_now)
+CQueuedSpinLock::CQueuedSpinLock(KSPIN_LOCK* lock, bool lock_now)
 {
     Lock = lock;
     OldIrql = PASSIVE_LEVEL;
@@ -39,11 +39,11 @@ CAutoQueuedSpinLock::CAutoQueuedSpinLock(KSPIN_LOCK* lock, bool lock_now)
     if (lock_now)
         DoAcquire();
 }
-CAutoQueuedSpinLock::~CAutoQueuedSpinLock()
+CQueuedSpinLock::~CQueuedSpinLock()
 {
     DoRelease();
 }
-void CAutoQueuedSpinLock::DoAcquire()
+void CQueuedSpinLock::DoAcquire()
 {
     if (!IsAcquired)
     {
@@ -57,7 +57,7 @@ void CAutoQueuedSpinLock::DoAcquire()
             KeAcquireInStackQueuedSpinLock(Lock, &QueueHandle);
     }
 }
-void CAutoQueuedSpinLock::DoRelease()
+void CQueuedSpinLock::DoRelease()
 {
     if (IsAcquired)
     {
