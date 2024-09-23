@@ -20,11 +20,11 @@
     <Filter Include="CppSupport">
       <UniqueIdentifier>{81b6c009-b509-4479-b531-49dc277a426e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="UtilFunctions">
-      <UniqueIdentifier>{bdc8e5f2-71b5-4918-98c5-5ff0888105db}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Scsi_Handler">
       <UniqueIdentifier>{4e1c7a06-8462-44b5-ad64-53d9f2d3651e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{bdc8e5f2-71b5-4918-98c5-5ff0888105db}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -46,7 +46,7 @@
       <Filter>CppSupport</Filter>
     </ClCompile>
     <ClCompile Include="DebugUtils.cpp">
-      <Filter>UtilFunctions</Filter>
+      <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="MiniportFunction.cpp">
       <Filter>Source Files</Filter>
@@ -95,28 +95,10 @@
     <ClInclude Include="Constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CppSupport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DebugUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MiniportFunction.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ScsiHandler_CDB16.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ScsiHandler_Utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ScsiHandler_CDB10.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ScsiHandler_CDB12.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ScsiHandler_CDB6.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StartIo_Handler.h">
@@ -130,6 +112,25 @@
     </ClInclude>
     <ClInclude Include="UnitControl_Handlers.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CppSupport.h">
+      <Filter>CppSupport</Filter>
+    </ClInclude>
+    <ClInclude Include="ScsiHandler_CDB6.h">
+      <Filter>Scsi_Handler</Filter>
+    </ClInclude>
+    <ClInclude Include="ScsiHandler_CDB10.h">
+      <Filter>Scsi_Handler</Filter>
+    </ClInclude>
+    <ClInclude Include="ScsiHandler_CDB12.h">
+      <Filter>Scsi_Handler</Filter>
+    </ClInclude>
+    <ClInclude Include="ScsiHandler_CDB16.h">
+      <Filter>Scsi_Handler</Filter>
+    </ClInclude>
+    <ClInclude Include="ScsiHandler_Utils.h">
+      <Filter>Scsi_Handler</Filter>
+
     </ClInclude>
   </ItemGroup>
 </Project>

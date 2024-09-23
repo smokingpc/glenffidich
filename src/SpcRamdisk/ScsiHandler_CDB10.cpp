@@ -151,4 +151,8 @@ end:
     srbext->SetDataTxLen(ret_size);
     return srb_status;
 }
-
+UCHAR Scsi_SynchronizeCache10(PSPC_SRBEXT srbext)
+{
+    UNREFERENCED_PARAMETER(srbext);
+    return SRB_STATUS_SUCCESS;
+}

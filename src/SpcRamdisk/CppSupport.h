@@ -39,10 +39,10 @@ void* operator new[](size_t size, POOL_TYPE type, ULONG tag = TAG_CPP);
 void operator delete(void* ptr, size_t size, ULONG tag);
 void operator delete(void* ptr, ULONG tag);
 
-class CAutoSpin {
+class CSpinLock {
 public:
-    CAutoSpin(KSPIN_LOCK* lock, bool lock_now = false);
-    ~CAutoSpin();
+    CSpinLock(KSPIN_LOCK* lock, bool lock_now = false);
+    ~CSpinLock();
     void DoAcquire();
     void DoRelease();
 
@@ -52,3 +52,16 @@ private:
     bool IsAcquired = false;
 };
 
+class CQueuedSpinLock {
+public:
+    CQueuedSpinLock(KSPIN_LOCK* lock, bool lock_now = false);
+    ~CQueuedSpinLock();
+    void DoAcquire();
+    void DoRelease();
+
+private:
+    KSPIN_LOCK* Lock = NULL;
+    KIRQL OldIrql = PASSIVE_LEVEL;
+    bool IsAcquired = false;
+    KLOCK_QUEUE_HANDLE QueueHandle = {0};
+};

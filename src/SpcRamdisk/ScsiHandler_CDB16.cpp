@@ -57,3 +57,8 @@ UCHAR Scsi_ReadCapacity16(PSPC_SRBEXT srbext)
     return srb_status;
 }
 
+UCHAR Scsi_SynchronizeCache16(PSPC_SRBEXT srbext)
+{
+    UNREFERENCED_PARAMETER(srbext);
+    return SRB_STATUS_SUCCESS;
+}
