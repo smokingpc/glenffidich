@@ -123,6 +123,7 @@ BOOLEAN HwStartIo(
     switch (srbext->FuncCode)
     {
         //case SRB_FUNCTION_ABORT_COMMAND:
+        //case SRB_FUNCTION_RESET_LOGICAL_UNIT:
         //case SRB_FUNCTION_RESET_DEVICE:
         //case SRB_FUNCTION_RESET_BUS:
         //case SRB_FUNCTION_WMI:

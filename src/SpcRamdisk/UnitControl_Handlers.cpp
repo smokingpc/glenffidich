@@ -26,7 +26,7 @@ SCSI_UNIT_CONTROL_STATUS HandleScsiUnitUsage(PSPC_DEVEXT devext, STOR_UC_DEVICE_
     UNREFERENCED_PARAMETER(param);
     CDebugCallInOut inout(__FUNCTION__);
 
-    //SCSI_UC_DEVICE_USAGE should be equivalent to DEVICE_USAGE_NOTIFICATION_TYPE
+  //SCSI_UC_DEVICE_USAGE should be equivalent to DEVICE_USAGE_NOTIFICATION_TYPE
     //refer to IRP_MN_DEVICE_USAGE_NOTIFICATION
     //The system sends this IRP when it is creating or deleting a paging file, dump file, 
     //or hibernation file. If a device has a power management relationship that falls 

@@ -29,7 +29,6 @@ void CSpinLock::DoRelease()
         IsAcquired = false;
     }
 }
-
 CQueuedSpinLock::CQueuedSpinLock(KSPIN_LOCK* lock, bool lock_now)
 {
     Lock = lock;

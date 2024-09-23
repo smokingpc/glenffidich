@@ -9,7 +9,6 @@ static __inline PVOID AllocatePoolMemory(POOL_TYPE type, size_t size, ULONG tag)
         RtlZeroMemory(ptr, size);
     return ptr;
 }
-
 void* __cdecl operator new (size_t size)
 {
     return AllocatePoolMemory(NonPagedPool, size, TAG_CPP);
@@ -26,7 +25,6 @@ void* __cdecl operator new[](size_t size)
 void* operator new[](size_t size, POOL_TYPE type, ULONG tag)
 {
     return AllocatePoolMemory(type, size, tag);
-}
 
 void __cdecl operator delete (void* ptr, size_t size)
 {

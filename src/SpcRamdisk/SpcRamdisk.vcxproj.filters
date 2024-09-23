@@ -130,6 +130,7 @@
     </ClInclude>
     <ClInclude Include="ScsiHandler_Utils.h">
       <Filter>Scsi_Handler</Filter>
+
     </ClInclude>
   </ItemGroup>
 </Project>
