@@ -47,9 +47,11 @@ EXTERN_C_END
 #include "PoolTag.h"
 #include "Constants.h"
 #include "Enumeration.h"
+
 #include "AutoPointer.hpp"
-#include "DebugUtils.h"
 #include "CppSupport.h"
+#include "DebugUtils.h"
+#include "KernelApiWrapper.h"
 
 #include "DevExt.h"
 #include "SrbExt.h"

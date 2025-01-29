@@ -67,4 +67,12 @@
 #define NQN_FORMAT          "nqn.2014-08.smokingpc:spc.ramdisk_%s"
 #define DISK_SN             (LONGLONG)1645017030  //epoc timestamp (2022/02/16 21:10:30)
 
-#define OVERRUN_TAG         (0x23939889)
+#define TARGET_MAJOR_VER        6
+#define TARGET_MINOR_VER        1
+#define TARGET_BUILD            7600
+
+#define OVERRUN_TAG                 (0x23939889)
+
+//If BSoD with this code, logic ran into place which should be placeholder(never be called).
+//It means this placeholder has wrong design.
+#define BUGCHECK_SHOULD_NOT_HAPPEN  0x3456789A

@@ -1,25 +1,105 @@
 #include "precompile.h"
 
-static __inline bool IsStorageRequestBlock(
+#if (NTDDI_VERSION < NTDDI_WIN8)
+//There is no following functions in Win7.
+// e.g. SrbSetScsiStatus() , SrbGetCdb()...etc.
+//Define them for Win7 to make main logic less modify.
+
+typedef PVOID PSTORAGE_REQUEST_BLOCK;
+
+static FORCEINLINE PSTOR_ADDRESS
+SrbGetAddress(_In_ PSTORAGE_REQUEST_BLOCK srb)
+{
+//Win7 never call to this path so this is just a placeholder in Win7.
+    KeBugCheckEx(BUGCHECK_SHOULD_NOT_HAPPEN, (ULONG_PTR)srb, 0, 0, 0);
+}
+static FORCEINLINE VOID
+SrbSetSrbStatus(
+    _In_ PVOID srb,
+    _In_ UCHAR srb_status)
+{
+    UNREFERENCED_PARAMETER(srb);
+    UNREFERENCED_PARAMETER(srb_status);
+    return;
+}
+static FORCEINLINE VOID
+SrbSetDataTransferLength(
+    _In_ PSCSI_REQUEST_BLOCK srb,
+    _In_ ULONG length)
+{
+    srb->DataTransferLength = length;
+}
+
+static FORCEINLINE void SrbSetScsiStatus(
+    _In_ PSCSI_REQUEST_BLOCK srb,
+    _In_ UCHAR scsi_status)
+{
+    srb->ScsiStatus = scsi_status;
+}
+static FORCEINLINE PCDB
+SrbGetCdb(_In_ PSCSI_REQUEST_BLOCK srb)
+{
+    return (PCDB)srb->Cdb;
+}
+static FORCEINLINE UCHAR
+SrbGetCdbLength(_In_ PSCSI_REQUEST_BLOCK srb)
+{
+    return srb->CdbLength;
+}
+static FORCEINLINE UCHAR
+SrbGetSrbFunction(_In_ PSCSI_REQUEST_BLOCK srb)
+{
+    return srb->Function;
+}
+static FORCEINLINE PVOID
+SrbGetDataBuffer(_In_ PSCSI_REQUEST_BLOCK srb)
+{
+    return srb->DataBuffer;
+}
+static FORCEINLINE ULONG
+SrbGetDataTransferLength(_In_ PSCSI_REQUEST_BLOCK srb)
+{
+    return srb->DataTransferLength;
+}
+static FORCEINLINE UCHAR
+SrbGetQueueTag(_In_ PSCSI_REQUEST_BLOCK srb)
+{
+    return srb->QueueTag;
+}
+FORCEINLINE PVOID
+SrbGetMiniportContext(
+    _In_ PSCSI_REQUEST_BLOCK srb
+)
+{
+    return srb->SrbExtension;
+}
+#endif
+
+static FORCEINLINE bool IsStorageRequestBlock(
     _In_ PSCSI_REQUEST_BLOCK srb)
 {
     return (SRB_FUNCTION_STORAGE_REQUEST_BLOCK == srb->Function);
 }
 
-static __inline bool IsScsiWrite(UCHAR opcode)
+static FORCEINLINE bool IsScsiWrite(UCHAR opcode)
 {
-     return (SCSIOP_WRITE6 == opcode) ||
-         (SCSIOP_WRITE == opcode)||
-         (SCSIOP_WRITE12 == opcode)||
-         (SCSIOP_WRITE16 == opcode);
+    return (SCSIOP_WRITE6 == opcode) ||
+        (SCSIOP_WRITE == opcode) ||
+        (SCSIOP_WRITE12 == opcode) ||
+        (SCSIOP_WRITE16 == opcode);
 }
+
 static void ParseStorportAddr(_In_ PSPC_SRBEXT srbext)
 {
     PSCSI_REQUEST_BLOCK srb = srbext->Srb;
+
     if (IsStorageRequestBlock(srb))
     {
-        PSTOR_ADDR_BTL8 addr =
-            (PSTOR_ADDR_BTL8)SrbGetAddress((PSTORAGE_REQUEST_BLOCK)srb);
+        //win7 only support SCSI_REQUEST_BLOCK. 
+        //should not call this function.
+        PSTOR_ADDR_BTL8 addr = (PSTOR_ADDR_BTL8)
+            SrbGetAddress((PSTORAGE_REQUEST_BLOCK)srbext->Srb);
+
         srbext->Bus = addr->Path;
         srbext->Target = addr->Target;
         srbext->Lun = addr->Lun;
@@ -33,14 +113,35 @@ static void ParseStorportAddr(_In_ PSPC_SRBEXT srbext)
         srbext->RaidPort = INVALID_RAIDPORT;
     }
 }
+static void ParseSenseInfoBuffer(_In_ PSPC_SRBEXT srbext)
+{
+    PSCSI_REQUEST_BLOCK srb = srbext->Srb;
+#if (NTDDI_VERSION >= NTDDI_WIN8)
+    if (IsStorageRequestBlock(srb))
+    {
+        srbext->ScsiSenseBuf = (PSENSE_DATA)SrbGetSenseInfoBuffer(srbext->Srb);
+        srbext->ScsiSenseBufLen = SrbGetSenseInfoBufferLength(srbext->Srb);
+    }
+    else
+#endif
+    {
+        srbext->ScsiSenseBuf = (PSENSE_DATA)srb->SenseInfoBuffer;
+        srbext->ScsiSenseBufLen = srb->SenseInfoBufferLength;
+    }
+}
+
 static void UpdateScsiStateToSrb(
     _In_ PSPC_SRBEXT srbext,
     _Inout_ UCHAR &srb_status)
 {
+    //srbext->Srb->SenseInfoBuffer
     if (nullptr == srbext->Srb)
         return;
-    PSENSE_DATA sdata = (PSENSE_DATA)SrbGetSenseInfoBuffer(srbext->Srb);
-    UCHAR sdata_size = SrbGetSenseInfoBufferLength(srbext->Srb);
+    PSENSE_DATA sdata = srbext->ScsiSenseBuf;
+    UCHAR sdata_size = srbext->ScsiSenseBufLen;
+
+    if(nullptr == sdata || 0 == sdata_size)
+        return;
 
     //do nothing for SRB_STATUS_PENDING.
     //Don't set scsistate for PENDING.
@@ -136,6 +237,7 @@ static void ParseScsiInfoFromSrb(_In_ PSPC_SRBEXT srbext)
     srbext->DataBufLen = SrbGetDataTransferLength(srb);
     srbext->ScsiTag = SrbGetQueueTag(srb);
 
+    ParseSenseInfoBuffer(srbext);
     ParseScsiReadWriteLBA(srbext);
     srbext->IsScsiWrite = IsScsiWrite(srbext->Cdb->CDB6GENERIC.OperationCode);
     srbext->IsScsiSrb = !IsStorageRequestBlock(srb);
@@ -183,6 +285,7 @@ bool _SPC_SRBEXT::GetSrbPnpRequest(
     if(nullptr == this->Srb)
         return false;
 
+#if (NTDDI_VERSION >= NTDDI_WIN8)
 //SrbGetSrbExDataByType() return NULL if srb is SCSI_REQUEST_BLOCK.
 //PSRBEX_DATA_PNP is only used for STORAGE_REQUEST_BLOCK.
     PSRBEX_DATA_PNP pnp = (PSRBEX_DATA_PNP)SrbGetSrbExDataByType(
@@ -192,7 +295,9 @@ bool _SPC_SRBEXT::GetSrbPnpRequest(
         flags = pnp->SrbPnPFlags;
         action = pnp->PnPAction;
     }
-    else {
+    else 
+#endif
+    {
         PSCSI_PNP_REQUEST_BLOCK scsi_pnp = 
             (PSCSI_PNP_REQUEST_BLOCK)this->Srb;
         flags = scsi_pnp->SrbPnPFlags;

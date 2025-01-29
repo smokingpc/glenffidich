@@ -61,6 +61,8 @@ typedef struct _SPC_SRBEXT
     ULONG RwLength;         //read/write in LBA blocks, not bytes.(0 if it's not read/write request)
     ULONG64 RwOffsetBytes;  //read/write offset in bytes.(0 if it's not read/write request)
     ULONG RwLengthBytes;    //read/write in bytes.(0 if it's not read/write request)
+    PSENSE_DATA ScsiSenseBuf;
+    UCHAR ScsiSenseBufLen;
 #pragma endregion
 
     ULONG OverrunProtect;

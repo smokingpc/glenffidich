@@ -119,6 +119,9 @@ SCSI_UNIT_CONTROL_STATUS HandleScsiUnitRichDescription(PSPC_DEVEXT devext, STOR_
     CDebugCallInOut inout(__FUNCTION__);
     return ScsiUnitControlUnsuccessful;
 }
+
+#if defined(STOR_UNIT_CONTROL_QUERY_BUS_TYPE)
+// defined in Windows 10 20H1 WDK
 SCSI_UNIT_CONTROL_STATUS HandleScsiUnitQueryBusType(PSPC_DEVEXT devext, STOR_UNIT_CONTROL_QUERY_BUS_TYPE* param)
 {
     UNREFERENCED_PARAMETER(devext);
@@ -126,6 +129,10 @@ SCSI_UNIT_CONTROL_STATUS HandleScsiUnitQueryBusType(PSPC_DEVEXT devext, STOR_UNI
     CDebugCallInOut inout(__FUNCTION__);
     return ScsiUnitControlUnsuccessful;
 }
+#endif
+
+#if defined(STOR_FRU_ID_DESCRIPTION)
+//defined in WinServer 2022 WDK
 SCSI_UNIT_CONTROL_STATUS HandleScsiUnitQueryFruId(PSPC_DEVEXT devext, STOR_FRU_ID_DESCRIPTION* param)
 {
     UNREFERENCED_PARAMETER(devext);
@@ -133,4 +140,4 @@ SCSI_UNIT_CONTROL_STATUS HandleScsiUnitQueryFruId(PSPC_DEVEXT devext, STOR_FRU_I
     CDebugCallInOut inout(__FUNCTION__);
     return ScsiUnitControlUnsuccessful;
 }
-
+#endif

@@ -1,4 +1,5 @@
 #pragma once
+
 // ================================================================
 // SpcRamdisk : OpenSource Ramdisk Driver for Windows 8+
 // Author : Roy Wang(SmokingPC).
@@ -34,22 +35,42 @@
 // Enjoy it.
 // ================================================================
 
-
-HW_INITIALIZE HwInitialize;
-HW_PASSIVE_INITIALIZE_ROUTINE HwPassiveInitializeRoutine;
-HW_STARTIO HwStartIo;
-HW_RESET_BUS HwResetBus;
-HW_ADAPTER_CONTROL HwAdapterControl;
-HW_FREE_ADAPTER_RESOURCES HwFreeAdapterResources;
-HW_PROCESS_SERVICE_REQUEST HwProcessServiceRequest;
-HW_COMPLETE_SERVICE_IRP HwCompleteServiceIrp;
-HW_UNIT_CONTROL HwUnitControl;
-HW_INITIALIZE_TRACING HwInitializeTracing;
-HW_TRACING_ENABLED HwTracingEnabled;
-HW_CLEANUP_TRACING HwCleanupTracing;
-
-#if (NTDDI_VERSION >= NTDDI_WIN8)
-    VIRTUAL_HW_FIND_ADAPTER HwVirtFindAdapter;
+//this declaration only valid in KernelApiWrapper.cpp
+//other files which include this header only get extern variable.
+#ifdef KERNEL_API_WRAPPER_CPP
+    OSVERSIONINFOEXW OsVer = {0};
 #else
-    HW_FIND_ADAPTER HwFindAdapter;
+    extern OSVERSIONINFOEXW OsVer;
+#endif //KERNEL_API_WRAPPER_CPP
+
+
+
+//KernelApiWrapper.h encapsulates some OS API because there are some API difference between Win7 to Win11.
+//e.g. ExAllocatePoolWithTag and ExAllocatePoolUninitialized.
+//To unify such API, use inline function to encapsulate them.
+
+void InitKernelApiWrapper();
+BOOLEAN IsSupportedOS();
+
+FORCEINLINE 
+PVOID 
+NTAPI SpcAllocatePool(
+    _In_ __drv_strictTypeMatch(__drv_typeExpr) POOL_TYPE type,
+    _In_ SIZE_T size,
+    _In_ ULONG tag)
+{
+    PVOID ptr = nullptr;
+#ifdef NTDDI_WIN10_VB
+    //In HLK2022 SDV, ExAllocatePoolWithTag() will be treat as error because obsoleted.
+    //Replace this API by ExAllocatePoolUninitialized().
+    if(OsVer.dwMajorVersion >= 10 && OsVer.dwBuildNumber >= 19041)
+        ptr = ExAllocatePoolUninitialized(type, size, tag);
+    else
+        ptr = ExAllocatePoolWithTag(type, size, tag);
+#else
+    ptr = ExAllocatePoolWithTag(type, size, tag);
 #endif
+
+    return ptr;
+}
+

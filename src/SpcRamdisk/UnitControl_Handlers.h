@@ -46,5 +46,13 @@ SCSI_UNIT_CONTROL_STATUS HandleScsiUnitPoFxPowerControl(PSPC_DEVEXT devext, STOR
 SCSI_UNIT_CONTROL_STATUS HandleScsiUnitRemove(PSPC_DEVEXT devext, STOR_ADDR_BTL8* param);
 SCSI_UNIT_CONTROL_STATUS HandleScsiUnitSurpriseRemoval(PSPC_DEVEXT devext, STOR_ADDR_BTL8* param);
 SCSI_UNIT_CONTROL_STATUS HandleScsiUnitRichDescription(PSPC_DEVEXT devext, STOR_RICH_DEVICE_DESCRIPTION* param);
+
+#ifdef NTDDI_WIN10_VB
+// defined in Windows 10 20H1 WDK
 SCSI_UNIT_CONTROL_STATUS HandleScsiUnitQueryBusType(PSPC_DEVEXT devext, STOR_UNIT_CONTROL_QUERY_BUS_TYPE* param);
+#endif
+
+#ifdef NTDDI_WIN10_FE
+//defined in WinServer 2022 WDK
 SCSI_UNIT_CONTROL_STATUS HandleScsiUnitQueryFruId(PSPC_DEVEXT devext, STOR_FRU_ID_DESCRIPTION* param);
+#endif

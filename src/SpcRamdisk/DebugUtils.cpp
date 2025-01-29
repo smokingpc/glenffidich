@@ -2,13 +2,6 @@
 
 #define MSG_BUFFER_SIZE     128
 
-#if 0
-#define DebugLog(fmt,args) \
-{ \
-    DbgPrintEx(DPFLTR_IHVDRIVER_ID, DBG_FILTER, fmt, args); \
-}
-#endif
-
 __inline void DebugCallIn(char *func_name)
 {
     DbgPrintEx(DPFLTR_IHVDRIVER_ID, DBG_FILTER, "%s [%s] IN =>\n", DEBUG_PREFIX, func_name);
@@ -79,12 +72,21 @@ void DebugUnitControlType(SCSI_UNIT_CONTROL_TYPE type)
     case ScsiUnitRichDescription:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "ScsiUnitRichDescription");
         break;
+
+#ifdef NTDDI_WIN10_VB
+    // defined in Windows 10 20H1 WDK
     case ScsiUnitQueryBusType:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "ScsiUnitQueryBusType");
         break;
+#endif
+
+#ifdef NTDDI_WIN10_FE
+    //defined in WinServer 2022 WDK
     case ScsiUnitQueryFruId:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "ScsiUnitQueryFruId");
         break;
+#endif
+
     default:
         RtlStringCbCatA(msg, MSG_BUFFER_SIZE, "UNKNOWN");
         break;

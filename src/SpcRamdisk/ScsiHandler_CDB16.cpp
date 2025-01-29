@@ -27,7 +27,7 @@ UCHAR Scsi_Verify16(PSPC_SRBEXT srbext)
     if (FALSE == srbext->DevExt->IsValidLbaAndLength(lba_start, verify_len))
         srb_status = SRB_STATUS_SUCCESS;
 
-    SrbSetDataTransferLength(srbext->Srb, 0);
+    srbext->SetSrbDataTxLen(0);
     return srb_status;
 }
 UCHAR Scsi_ReadCapacity16(PSPC_SRBEXT srbext)

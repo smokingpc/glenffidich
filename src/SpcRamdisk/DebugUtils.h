@@ -53,3 +53,68 @@ public:
     CDebugCallInOut(char* name);
     ~CDebugCallInOut();
 };
+
+#define LOG_LEVEL_DEBUG  1
+#define LOG_LEVEL_INFO   2
+#define LOG_LEVEL_WARN   4
+#define LOG_LEVEL_ERROR  0   //make the log shown on windbg without any setting
+
+__inline void PrintMsgToWindbg(
+    _In_ ULONG level,
+    _In_ const char* msg,
+    _In_ va_list arglist)
+{
+    switch (level)
+    {
+    case LOG_LEVEL_DEBUG:
+        DbgPrintEx(DPFLTR_IHVDRIVER_ID, level, "[SPC Debug]");
+        break;
+    case LOG_LEVEL_INFO:
+        DbgPrintEx(DPFLTR_IHVDRIVER_ID, level, "[SPC Info]");
+        break;
+    case LOG_LEVEL_WARN:
+        DbgPrintEx(DPFLTR_IHVDRIVER_ID, level, "[SPC Warning]");
+        break;
+    case LOG_LEVEL_ERROR:
+        DbgPrintEx(DPFLTR_IHVDRIVER_ID, level, "[SPC Error]");
+        break;
+    }
+
+    vDbgPrintEx(DPFLTR_IHVDRIVER_ID, level, msg, arglist);
+}
+
+__inline void PrintErrorMsg(_In_ const char* msg, ...)
+{
+    va_list arglist;
+    va_start(arglist, msg);
+    PrintMsgToWindbg(LOG_LEVEL_ERROR, msg, arglist);
+    va_end(arglist);
+}
+
+__inline void PrintWarngMsg(_In_ const char* msg, ...)
+{
+    va_list arglist;
+    va_start(arglist, msg);
+    PrintMsgToWindbg(LOG_LEVEL_WARN, msg, arglist);
+    va_end(arglist);
+}
+
+__inline void PrintInfoMsg(_In_ const char* msg, ...)
+{
+    va_list arglist;
+    va_start(arglist, msg);
+    PrintMsgToWindbg(LOG_LEVEL_INFO, msg, arglist);
+    va_end(arglist);
+}
+
+#if defined(DBG)
+__inline void PrintDebugMsg(_In_ const char* msg, ...)
+{
+    va_list arglist;
+    va_start(arglist, msg);
+    PrintMsgToWindbg(LOG_LEVEL_DEBUG, msg, arglist);
+    va_end(arglist);
+}
+#else
+#define PrintDebugMsg(msg, ...)
+#endif
