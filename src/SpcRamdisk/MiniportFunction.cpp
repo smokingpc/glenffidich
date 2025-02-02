@@ -1,6 +1,5 @@
 #include "precompile.h"
 
-#if (NTDDI_VERSION >= NTDDI_WIN8)
 _Use_decl_annotations_
 ULONG HwVirtFindAdapter(
     _In_ PVOID DeviceExtension,
@@ -24,12 +23,10 @@ ULONG HwVirtFindAdapter(
     PortInfo->MaximumTransferLength = MAX_TX_SIZE;
     PortInfo->NumberOfPhysicalBreaks = MAX_TX_PAGES;
     PortInfo->AlignmentMask = FILE_LONG_ALIGNMENT;
-    PortInfo->MiniportDumpData = NULL;
     PortInfo->InitiatorBusId[0] = 1;
     PortInfo->CachesData = FALSE;   //If set it to TRUE, miniport will receive SRB_FUNCTION_FLUSH after SCSIOP_SYNCRHONIZE_CACHE when flushing cache.
     PortInfo->MapBuffers = STOR_MAP_ALL_BUFFERS_INCLUDING_READ_WRITE; //specify bounce buffer type?
     PortInfo->MaximumNumberOfTargets = 1;
-    PortInfo->SrbType = SRB_TYPE_STORAGE_REQUEST_BLOCK;
     PortInfo->DeviceExtensionSize = sizeof(SPC_DEVEXT);
     PortInfo->SrbExtensionSize = sizeof(SPC_SRBEXT);
     PortInfo->MaximumNumberOfLogicalUnits = SUPPORTED_LU;
@@ -37,12 +34,10 @@ ULONG HwVirtFindAdapter(
     PortInfo->HwMSInterruptRoutine = NULL;
     PortInfo->InterruptSynchronizationMode = InterruptSupportNone;
     PortInfo->VirtualDevice = TRUE;
-    PortInfo->MaxIOsPerLun = MAX_IO_PER_LUN;
     PortInfo->MaxNumberOfIO = MAX_TOTAL_IO;
     PortInfo->NumberOfBuses = 1;
     PortInfo->ScatterGather = TRUE;
     PortInfo->Master = TRUE;
-    PortInfo->AddressType = STORAGE_ADDRESS_TYPE_BTL8;
     PortInfo->Dma64BitAddresses = SCSI_DMA64_MINIPORT_FULL64BIT_SUPPORTED;
 
     PortInfo->DumpRegion.VirtualBase = NULL;
@@ -51,65 +46,20 @@ ULONG HwVirtFindAdapter(
     // If the buffer is not mapped, DataBuffer is the same as MDL's original virtual address, 
     // which could even be zero.
     PortInfo->RequestedDumpBufferSize = 0;
+
+#if (NTDDI_VERSION >= NTDDI_WIN8)
     PortInfo->FeatureSupport = 0;
-
-    StorPortGetDeviceObjects(devext, (PVOID*)&devext->FDO, (PVOID*)&devext->PDO, (PVOID*)&devext->LowerDO);
-    devext->Driver = devext->FDO->DriverObject;
-
-    return SP_RETURN_FOUND;
-}
-#else
-_Use_decl_annotations_
-ULONG HwFindAdapter(
-    _In_ PVOID DeviceExtension,
-    _In_ PVOID HwContext,
-    _In_ PVOID BusInformation,
-    _In_z_ PCHAR ArgumentString,
-    _Inout_ PPORT_CONFIGURATION_INFORMATION PortInfo,
-    _In_ PBOOLEAN Reserved3)
-{
-    CDebugCallInOut inout(__FUNCTION__);
-    UNREFERENCED_PARAMETER(HwContext);
-    UNREFERENCED_PARAMETER(BusInformation);
-    UNREFERENCED_PARAMETER(ArgumentString);
-    UNREFERENCED_PARAMETER(Reserved3);
-
-    PSPC_DEVEXT devext = (PSPC_DEVEXT)DeviceExtension;
-    devext->Setup();
-
-    PortInfo->MaximumTransferLength = MAX_TX_SIZE;
-    PortInfo->NumberOfPhysicalBreaks = MAX_TX_PAGES;
-    PortInfo->AlignmentMask = FILE_LONG_ALIGNMENT;
-    PortInfo->InitiatorBusId[0] = 1;
-    PortInfo->CachesData = FALSE;   //If set it to TRUE, miniport will receive SRB_FUNCTION_FLUSH after SCSIOP_SYNCRHONIZE_CACHE when flushing cache.
-    PortInfo->MapBuffers = STOR_MAP_ALL_BUFFERS_INCLUDING_READ_WRITE; //specify bounce buffer type?
-    PortInfo->MaximumNumberOfTargets = 1;
-    PortInfo->DeviceExtensionSize = sizeof(SPC_DEVEXT);
-    PortInfo->SrbExtensionSize = sizeof(SPC_SRBEXT);
-    PortInfo->MaximumNumberOfLogicalUnits = SUPPORTED_LU;
-    PortInfo->SynchronizationModel = StorSynchronizeFullDuplex;
-    PortInfo->HwMSInterruptRoutine = NULL;
-    PortInfo->InterruptSynchronizationMode = InterruptSupportNone;
-    PortInfo->VirtualDevice = TRUE;
-    PortInfo->MaxNumberOfIO = MAX_TOTAL_IO;
-    PortInfo->NumberOfBuses = 1;
-    PortInfo->ScatterGather = TRUE;
-    PortInfo->Master = TRUE;
-    PortInfo->Dma64BitAddresses = SCSI_DMA64_MINIPORT_FULL64BIT_SUPPORTED;
-
-    PortInfo->DumpRegion.VirtualBase = NULL;
-    PortInfo->DumpRegion.PhysicalBase.QuadPart = NULL;
-    PortInfo->DumpRegion.Length = 0;
-    // If the buffer is not mapped, DataBuffer is the same as MDL's original virtual address, 
-    // which could even be zero.
-    PortInfo->RequestedDumpBufferSize = 0;
-
-    StorPortGetDeviceObjects(devext, (PVOID*)&devext->FDO, (PVOID*)&devext->PDO, (PVOID*)&devext->LowerDO);
-    devext->Driver = devext->FDO->DriverObject;
-
-    return SP_RETURN_FOUND;
-}
+    PortInfo->MaxIOsPerLun = MAX_IO_PER_LUN;
+    PortInfo->AddressType = STORAGE_ADDRESS_TYPE_BTL8;
+    PortInfo->MiniportDumpData = NULL;
+    PortInfo->SrbType = SRB_TYPE_STORAGE_REQUEST_BLOCK;
 #endif
+
+    StorPortGetDeviceObjects(devext, (PVOID*)&devext->FDO, (PVOID*)&devext->PDO, (PVOID*)&devext->LowerDO);
+    devext->Driver = devext->FDO->DriverObject;
+
+    return SP_RETURN_FOUND;
+}
 
 _Use_decl_annotations_ 
 BOOLEAN HwInitialize(PVOID DeviceExtension)
@@ -177,6 +127,23 @@ BOOLEAN HwStartIo(
 
     DebugSrbFunctionCode(srbext->FuncCode);
 
+    if(0 != srbext->Bus)
+    {
+        srb_status = SRB_STATUS_INVALID_PATH_ID;
+        goto END;
+    }
+    if (0 != srbext->Target)
+    {
+        srb_status = SRB_STATUS_INVALID_TARGET_ID;
+        goto END;
+    }
+    if (0 != srbext->Lun)
+    {
+        srb_status = SRB_STATUS_INVALID_LUN;
+        goto END;
+    }
+
+
     switch (srbext->FuncCode)
     {
         //case SRB_FUNCTION_ABORT_COMMAND:
@@ -216,7 +183,7 @@ BOOLEAN HwStartIo(
         srb_status = SRB_STATUS_INVALID_REQUEST;
         break;
     }
-
+END:
     if(SRB_STATUS_PENDING != srb_status)
         srbext->CompleteSrb(srb_status);
     return TRUE;
@@ -380,7 +347,7 @@ SCSI_UNIT_CONTROL_STATUS HwUnitControl(
         status = HandleScsiUnitRichDescription(devext, (STOR_RICH_DEVICE_DESCRIPTION*)Parameters);
         break;
 
-#ifdef NTDDI_WIN10_VB
+#if defined(STOR_UNIT_CONTROL_QUERY_BUS_TYPE)
     // defined in Windows 10 20H1 WDK
     case ScsiUnitQueryBusType:
         //PASSIVE_LEVEL
@@ -388,8 +355,7 @@ SCSI_UNIT_CONTROL_STATUS HwUnitControl(
         break;
 #endif
 
-
-#ifdef NTDDI_WIN10_FE
+#if defined(STOR_FRU_ID_DESCRIPTION)
     //defined in WinServer 2022 WDK
     case ScsiUnitQueryFruId:
         //PASSIVE_LEVEL

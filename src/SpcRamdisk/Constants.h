@@ -54,8 +54,8 @@
 #define INVALID_LUN_ID      (MAXUCHAR)
 #define INVALID_SCSI_TAG    (MAXULONG)
 
-#define DEFAULT_BLOCK_SIZE    4096
-#define DEFAULT_BLOCK_SIZE2   512
+#define DEFAULT_4K_BLOCK_SIZE    4096
+#define DEFAULT_512_BLOCK_SIZE   512
 #define DEFAULT_DISK_BYTES    128 * MegaBytes
 #define WORKER_PROCESS_COUNT  128  //how many requests worker thread handled in each loop?
 #define WORKER_INTERVAL       (-10*1000)    //how long worker thread wait in each loop?
@@ -67,9 +67,13 @@
 #define NQN_FORMAT          "nqn.2014-08.smokingpc:spc.ramdisk_%s"
 #define DISK_SN             (LONGLONG)1645017030  //epoc timestamp (2022/02/16 21:10:30)
 
-#define TARGET_MAJOR_VER        6
-#define TARGET_MINOR_VER        1
-#define TARGET_BUILD            7600
+//Storport is fully supported since Win8.
+//In Win7 SP1, we need to change some structure of this driver to fit Win7.
+#define TARGET_WIN8_MAJOR_VER        6
+#define TARGET_WIN8_MINOR_VER        2
+#define TARGET_WIN7_MAJOR_VER        6
+#define TARGET_WIN7_MINOR_VER        1
+#define TARGET_WIN7_BUILD            7600
 
 #define OVERRUN_TAG                 (0x23939889)
 

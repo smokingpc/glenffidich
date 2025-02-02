@@ -15,6 +15,7 @@ UCHAR Scsi_ReportLuns12(PSPC_SRBEXT srbext)
 {
     UCHAR srb_status = SRB_STATUS_INVALID_REQUEST;
     UNREFERENCED_PARAMETER(srbext);
+    //srbext->SetSrbDataTxLen(0);
     //REPORT_LUNS + LUN_LIST structures
     return srb_status;
 }

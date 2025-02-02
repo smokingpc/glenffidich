@@ -62,7 +62,7 @@ UCHAR StartIo_HandlePnpCmd(PSPC_SRBEXT srbext)
     UCHAR srb_status = SRB_STATUS_ERROR;
 
     ULONG flag = 0;
-    STOR_PNP_ACTION action;
+    STOR_PNP_ACTION action = STOR_PNP_ACTION::StorStartDevice;
     srbext->GetSrbPnpRequest(flag, action);
 
     switch (action)
@@ -105,11 +105,11 @@ UCHAR StartIo_HandleScsiCmd(PSPC_SRBEXT srbext)
 
     switch (opcode)
     {
-        // 6-byte commands:
+#if 0
+    // 6-byte commands:
     case SCSIOP_TEST_UNIT_READY:
         srb_status = SRB_STATUS_SUCCESS;
         break;
-#if 0
     case SCSIOP_REZERO_UNIT:
         //case SCSIOP_REWIND:
     case SCSIOP_REQUEST_BLOCK_ADDR:

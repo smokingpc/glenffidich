@@ -7,8 +7,6 @@ SCSI_UNIT_CONTROL_STATUS HandleQueryUnitControlTypes(PSPC_DEVEXT devext, SCSI_SU
     ULONG max = param->MaxControlType;
 
     param->SupportedTypeList[ScsiQuerySupportedUnitControlTypes] = TRUE;
-    //if (max >= (ULONG)ScsiUnitUsage)
-    //    param->SupportedTypeList[ScsiUnitUsage] = TRUE;
     if (max >= (ULONG)ScsiUnitStart)
         param->SupportedTypeList[ScsiUnitStart] = TRUE;
     if (max >= (ULONG)ScsiUnitPower)
@@ -31,7 +29,6 @@ SCSI_UNIT_CONTROL_STATUS HandleScsiUnitUsage(PSPC_DEVEXT devext, STOR_UC_DEVICE_
     //The system sends this IRP when it is creating or deleting a paging file, dump file, 
     //or hibernation file. If a device has a power management relationship that falls 
     //outside of the conventional parent-child relationship, the driver can send this
-//    DbgBreakPoint();
     return ScsiUnitControlUnsuccessful;
 }
 SCSI_UNIT_CONTROL_STATUS HandleScsiUnitStart(PSPC_DEVEXT devext, STOR_ADDR_BTL8* param)

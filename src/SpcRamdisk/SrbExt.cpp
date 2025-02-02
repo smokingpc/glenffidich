@@ -15,11 +15,10 @@ SrbGetAddress(_In_ PSTORAGE_REQUEST_BLOCK srb)
 }
 static FORCEINLINE VOID
 SrbSetSrbStatus(
-    _In_ PVOID srb,
+    _In_ PSCSI_REQUEST_BLOCK srb,
     _In_ UCHAR srb_status)
 {
-    UNREFERENCED_PARAMETER(srb);
-    UNREFERENCED_PARAMETER(srb_status);
+    srb->SrbStatus = srb_status;
     return;
 }
 static FORCEINLINE VOID
@@ -143,6 +142,7 @@ static void UpdateScsiStateToSrb(
     if(nullptr == sdata || 0 == sdata_size)
         return;
 
+    RtlZeroMemory(sdata, sdata_size);
     //do nothing for SRB_STATUS_PENDING.
     //Don't set scsistate for PENDING.
     switch (srb_status)
@@ -163,7 +163,6 @@ static void UpdateScsiStateToSrb(
         }
         else
         {
-            RtlZeroMemory(sdata, sdata_size);
             sdata->ErrorCode = SCSI_SENSE_ERRORCODE_FIXED_CURRENT;
             sdata->SenseKey = SCSI_SENSE_ILLEGAL_REQUEST;
             sdata->AdditionalSenseLength = sdata_size - FIELD_OFFSET(SENSE_DATA, AdditionalSenseLength);

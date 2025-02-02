@@ -47,9 +47,4 @@ HW_UNIT_CONTROL HwUnitControl;
 HW_INITIALIZE_TRACING HwInitializeTracing;
 HW_TRACING_ENABLED HwTracingEnabled;
 HW_CLEANUP_TRACING HwCleanupTracing;
-
-#if (NTDDI_VERSION >= NTDDI_WIN8)
-    VIRTUAL_HW_FIND_ADAPTER HwVirtFindAdapter;
-#else
-    HW_FIND_ADAPTER HwFindAdapter;
-#endif
+VIRTUAL_HW_FIND_ADAPTER HwVirtFindAdapter;

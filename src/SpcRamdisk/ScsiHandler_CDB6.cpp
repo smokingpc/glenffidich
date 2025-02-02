@@ -216,9 +216,9 @@ static void Fill_InquiryData(PINQUIRYDATA data, char* vid, char* pid, char* rev)
     data->RemovableMedia = 0;
     data->Versions = 0x06;
     data->NormACA = 0;
-    data->HiSupport = 0;
-    data->ResponseDataFormat = 2;
-    data->AdditionalLength = INQUIRYDATABUFFERSIZE - 5;  // Amount of data we are returning
+    data->HiSupport = TRUE;         //SCSI Adapter->channel->id->lun, similar as Host->Bus->Target->Lun
+    data->ResponseDataFormat = 2;   //currently only support 2, other values are obsoleted.
+    data->AdditionalLength = INQUIRYDATABUFFERSIZE - 4;  //data size followed after "AdditionalLength" field.
     data->EnclosureServices = 0;
     data->MediumChanger = 0;
     data->CommandQueue = 1;
@@ -229,9 +229,9 @@ static void Fill_InquiryData(PINQUIRYDATA data, char* vid, char* pid, char* rev)
 
     data->Wide32Bit = TRUE;
     data->LinkedCommands = FALSE;   // No Linked Commands
-    RtlCopyMemory((PUCHAR)&data->VendorId[0], vid, strlen(vid));
-    RtlCopyMemory((PUCHAR)&data->ProductId[0], pid, strlen(pid));
-    RtlCopyMemory((PUCHAR)&data->ProductRevisionLevel[0], rev, strlen(rev));
+    RtlCopyMemory((PUCHAR)data->VendorId, vid, strlen(vid));
+    RtlCopyMemory((PUCHAR)data->ProductId, pid, strlen(pid));
+    RtlCopyMemory((PUCHAR)data->ProductRevisionLevel, rev, strlen(rev));
 }
 
 static UCHAR Reply_NonVpdInquiry(PSPC_SRBEXT srbext, ULONG& ret_size)
@@ -242,7 +242,7 @@ static UCHAR Reply_NonVpdInquiry(PSPC_SRBEXT srbext, ULONG& ret_size)
     ret_size = INQUIRYDATABUFFERSIZE;
     if (size >= INQUIRYDATABUFFERSIZE)
     {
-        RtlZeroMemory(srbext->DataBuf, srbext->DataBufLen);
+        RtlZeroMemory(data, size);
         Fill_InquiryData(data, (char*)VENDOR_ID, (char*)PRODUCT_ID, REV_ID);
         srb_status = SRB_STATUS_SUCCESS;
     }
@@ -316,10 +316,12 @@ UCHAR Scsi_Inquiry6(PSPC_SRBEXT srbext)
 
     if (cdb->CDB6INQUIRY3.EnableVitalProductData)
     {
+//Since Win8, storport send Inquiry with VPD enabled.
         srb_status = Reply_VpdInquiry(srbext, ret_size);
     }
     else
     {
+//Win7/2008 and older version use NonVpdInquiry.
         if (cdb->CDB6INQUIRY3.PageCode > 0) 
         {
             srb_status = SRB_STATUS_ERROR;
