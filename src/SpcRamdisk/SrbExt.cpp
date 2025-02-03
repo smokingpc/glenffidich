@@ -196,24 +196,24 @@ static void ParseScsiReadWriteLBA(_In_ PSPC_SRBEXT srbext)
     case SCSIOP_WRITE:
     case SCSIOP_VERIFY:
     {
-        REVERSE_BYTES_4(srbext->RwOffset, &cdb->CDB10.LogicalBlockByte0);
-        REVERSE_BYTES_2(srbext->RwLength, &cdb->CDB10.TransferBlocksMsb);
+        REVERSE_BYTES_4(&srbext->RwOffset, &cdb->CDB10.LogicalBlockByte0);
+        REVERSE_BYTES_2(&srbext->RwLength, &cdb->CDB10.TransferBlocksMsb);
         break;
     }
     case SCSIOP_READ12:
     case SCSIOP_WRITE12:
     case SCSIOP_VERIFY12:
     {
-        REVERSE_BYTES_4(srbext->RwOffset, &cdb->CDB12.LogicalBlock);
-        REVERSE_BYTES_4(srbext->RwLength, &cdb->CDB12.TransferLength);
+        REVERSE_BYTES_4(&srbext->RwOffset, &cdb->CDB12.LogicalBlock);
+        REVERSE_BYTES_4(&srbext->RwLength, &cdb->CDB12.TransferLength);
         break;
     }
     case SCSIOP_READ16:
     case SCSIOP_WRITE16:
     case SCSIOP_VERIFY16:
     {
-        REVERSE_BYTES_8(srbext->RwOffset, cdb->CDB16.LogicalBlock);
-        REVERSE_BYTES_4(srbext->RwLength, cdb->CDB16.TransferLength);
+        REVERSE_BYTES_8(&srbext->RwOffset, cdb->CDB16.LogicalBlock);
+        REVERSE_BYTES_4(&srbext->RwLength, cdb->CDB16.TransferLength);
         break;
     }
 
